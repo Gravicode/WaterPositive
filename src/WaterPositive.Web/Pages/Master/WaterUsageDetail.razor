@@ -1,0 +1,110 @@
+﻿@inject IJSRuntime jsRuntime
+@using System.IO
+@inject IToastService toastService
+@inject WaterUsageService service
+@inject UserProfileService UserSvc
+@inject WaterDepotService DepotSvc
+@inject AzureBlobHelper blob;
+
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3 mb-n1" />
+            @CustomHeader
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@TaskObject" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <input type="hidden" @bind="@TaskObject.Id" />
+                            <MudDatePicker Label="Tanggal" @bind-Date="TaskObject.Tanggal" />
+                            <MudSelect T="long" Label="Water Depot" Required @bind-Value="@TaskObject.WaterDepotId" AnchorOrigin="Origin.BottomCenter">
+                                @if (ListDepot != null)
+                                    @foreach (var item in ListDepot)
+                                    {
+                                        <MudSelectItem Value="@(item.Id)">@item.Nama</MudSelectItem>
+                                    }
+                            </MudSelect>
+                             <MudSelect T="long" Label="User" Required @bind-Value="@TaskObject.UserId" AnchorOrigin="Origin.BottomCenter">
+                                @if (ListUser != null)
+                                    @foreach (var item in ListUser)
+                                    {
+                                        <MudSelectItem Value="@(item.Id)">@item.FullName</MudSelectItem>
+                                    }
+                            </MudSelect>
+                            <MudTextField Label="Volume" @bind-Value="TaskObject.Volume" For="@(() => TaskObject.Volume)" />
+
+                           
+                           
+
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Simpan</MudButton>
+                            <MudButton ButtonType="ButtonType.Button" OnClick="Cancel" Variant="Variant.Filled" Color="Color.Secondary">Cancel</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+
+            </MudGrid>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    List<WaterDepot> ListDepot=new();
+    List<UserProfile> ListUser=new();
+
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    [Parameter]
+    public string CustomHeader { get; set; }
+    [Parameter]
+    public WaterUsage TaskObject { get; set; }
+    [Parameter]
+    public Action DataChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListUser = UserSvc.GetAllData();
+        ListDepot = DepotSvc.GetAllData();
+    }
+    private void OnValidSubmit(EditContext context)
+    {
+        if (TaskObject.Id == 0)
+        {
+
+            var hasil = service.InsertData(TaskObject);
+            if (!hasil)
+            {
+                Snackbar.Add("Gagal menyimpan data. Isi data dengan lengkap.", Severity.Error);
+                //toastService.ShowError("Gagal menyimpan data. Isi data dengan lengkap.", "Perhatian");
+            }
+        }
+        else
+        {
+            service.UpdateData(TaskObject);
+        }
+
+        //In a real world scenario this bool would probably be a service to delete the item from api/database
+        Snackbar.Add("Data Saved", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(TaskObject.Id));
+        DataChanged?.Invoke();
+    }
+
+}

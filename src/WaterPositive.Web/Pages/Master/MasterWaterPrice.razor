@@ -1,0 +1,202 @@
+﻿@page "/master/WaterPrice"
+
+@inject IJSRuntime jsRuntime
+@inject NavigationManager NavMgr
+@inject IToastService toastService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
+@using System.IO
+
+<h1>Daftar WaterPrice</h1>
+
+<p>Gunakan halaman ini untuk melihat info WaterPrice.</p>
+
+@if (DataWaterPrice == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MudTable Context="item" Items="@DataWaterPrice" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<WaterPrice,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Data WaterPrice</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Tanggal Awal</MudTh>
+            <MudTh>Tanggal Akhir</MudTh>
+            <MudTh>Periode</MudTh>
+            <MudTh>Harga per Liter</MudTh>
+            <MudTh>Diupdate Oleh</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Tanggal Awal">@item.TanggalAwal?.ToString("dd/MMM/yyyy")</MudTd>
+            <MudTd DataLabel="Tanggal Akhir">@item.TanggalAkhir?.ToString("dd/MMM/yyyy")</MudTd>
+            <MudTd DataLabel="Periode">@item.Periode</MudTd>
+            <MudTd DataLabel="Harga per Liter">@item.PricePerLiter.ToString("n0")</MudTd>
+            <MudTd DataLabel="Diupdate Oleh">@item.UpdatedBy</MudTd>
+            <MudTd DataLabel="Actions">
+                @if (HasLogin)
+                {
+                    <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForEdit(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Ubah</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForDelete(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Error" Class="mr-2">Hapus</MudButton>
+                }
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+
+    <div class="d-flex flex-wrap mt-4">
+        <MudSwitch @bind-Checked="@hover" Color="Color.Primary">Hover</MudSwitch>
+        <MudSwitch @bind-Checked="@dense" Color="Color.Secondary">Dense</MudSwitch>
+        <MudSwitch @bind-Checked="@striped" Color="Color.Tertiary">Striped</MudSwitch>
+        <MudSwitch @bind-Checked="@bordered" Color="Color.Warning">Bordered</MudSwitch>
+    </div>
+
+
+}
+@if (HasLogin)
+{
+    <MudPaper Class="pa-4 mt-4">
+        <MudButton ButtonType="ButtonType.Button" @onclick="(() => InitializeitemObject())" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Masukan WaterPrice Baru</MudButton>
+    </MudPaper>
+}
+
+@code {
+    bool HasLogin = false;
+    WaterPriceDetail detail;
+    WaterPositive.Web.Data.WaterPriceService service;
+    string customHeader = string.Empty;
+    List<WaterPrice> DataWaterPrice;
+    WaterPrice itemObject = new WaterPrice();
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    string UserName;
+
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = false;
+    private bool bordered = false;
+    private string searchString1 = "";
+    private WaterPrice selectedItem1 = null;
+
+    private HashSet<WaterPrice> selectedItems = new HashSet<WaterPrice>();
+
+    private bool FilterFunc1(WaterPrice element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(WaterPrice element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Periode.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.UpdatedBy.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+       
+
+        return false;
+    }
+
+    async Task DownloadFile(string Url)
+    {
+        if (!string.IsNullOrEmpty(Url))
+        {
+            NavMgr.NavigateTo(Url, true);
+        }
+        else
+        {
+            toastService.ShowError("Url kosong atau tidak valid.");
+        }
+    }
+
+    WaterPositive.Web.Data.UserProfileService Userservice;
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (Userservice == null) Userservice = new UserProfileService();
+        var user = (await authenticationStateTask).User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            UserName = user.Identity.Name;
+            HasLogin = true;// Userservice.GetUserRole(UserName) == Roles.Admin;
+        }
+
+        if (service == null) service = new WaterPriceService();
+
+        DataWaterPrice = service.GetAllData();
+
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+    }
+
+    private async Task InitializeitemObject()
+    {
+
+        itemObject = new WaterPrice();
+
+        customHeader = "Masukan WaterPrice Baru";
+
+        var action = new Action(DataChanged);
+        var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };
+
+        var dialog = DialogService.Show<WaterPriceDetail>(customHeader, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            long.TryParse(result.Data.ToString(), out var NewId);
+        }
+    }
+    private async void DataChanged()
+    {
+        DataWaterPrice = service.GetAllData();
+        StateHasChanged();
+    }
+
+    private async Task PrepareForEdit(WaterPrice item)
+    {
+        customHeader = "Ubah Data WaterPrice";
+        itemObject = item;
+        var action = new Action(DataChanged);
+        var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };
+
+        var dialog = DialogService.Show<WaterPriceDetail>(customHeader, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            long.TryParse(result.Data.ToString(), out var NewId);
+        }
+
+    }
+    private async Task PrepareForDelete(WaterPrice item)
+    {
+        itemObject = item;
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<ConfirmDialog>("Konfirmasi", options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            var task = service.DeleteData(itemObject.Id);
+            //await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
+            DataWaterPrice = service.GetAllData();
+            itemObject = new WaterPrice() { Id = -1 };
+        }
+    }
+
+
+}
+
