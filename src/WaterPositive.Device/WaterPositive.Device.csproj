@@ -58,6 +58,9 @@
     <Reference Include="GHIElectronics.TinyCLR.Pins, Version=2.2.0.4000, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GHIElectronics.TinyCLR.Pins.2.2.0\lib\net452\GHIElectronics.TinyCLR.Pins.dll</HintPath>
     </Reference>
+    <Reference Include="GHIElectronics.TinyCLR.RegularExpressions, Version=2.2.0.4000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GHIElectronics.TinyCLR.RegularExpressions.2.2.0\lib\net452\GHIElectronics.TinyCLR.RegularExpressions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Json.TinyCLR\Json.TinyCLR.csproj">

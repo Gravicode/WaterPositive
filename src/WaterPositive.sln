@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterPositive.Device", "Wat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.TinyCLR", "Json.TinyCLR\Json.TinyCLR.csproj", "{13481660-7E5F-4863-9DA7-AEDC05D0D687}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterPositive.Kiosk", "WaterPositive.Kiosk\WaterPositive.Kiosk.csproj", "{880AA740-2C20-4C03-87B7-C212AA019488}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{13481660-7E5F-4863-9DA7-AEDC05D0D687}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13481660-7E5F-4863-9DA7-AEDC05D0D687}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13481660-7E5F-4863-9DA7-AEDC05D0D687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{880AA740-2C20-4C03-87B7-C212AA019488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{880AA740-2C20-4C03-87B7-C212AA019488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{880AA740-2C20-4C03-87B7-C212AA019488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{880AA740-2C20-4C03-87B7-C212AA019488}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{B70E80FA-2F77-4CD2-8F14-F24E3E1400B3} = {00AD5F0F-44F5-4AF8-B0FA-2E921000F106}
 		{93D5F0B8-F7F5-46FC-BFAA-272F98E2E854} = {6F96A67A-C3C3-42EA-986B-C38F29FD11C8}
 		{13481660-7E5F-4863-9DA7-AEDC05D0D687} = {00AD5F0F-44F5-4AF8-B0FA-2E921000F106}
+		{880AA740-2C20-4C03-87B7-C212AA019488} = {9AF0C71D-5C12-4DD3-8FE8-A07857DB1B2A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EA7D4BC-D472-403A-957B-999AB7376F57}

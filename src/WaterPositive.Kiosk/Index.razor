@@ -1,0 +1,110 @@
+﻿@page "/"
+@layout MainLayout
+@using System.Text.Json
+@inject HubProcessorService HubSvc
+@implements IDisposable
+<PageTitle>Dashboard IoT Sederhana</PageTitle>
+<MudButton @onclick="RandomizeData" Variant="Variant.Filled" Color="Color.Primary">@LabelBtn</MudButton>
+<MudButton @onclick="Setup" Variant="Variant.Filled" Color="Color.Primary">Get Data From IoT Hub</MudButton>
+<MudGrid>
+    <MudItem xs="12">
+        <MudChart ChartType="ChartType.Line" ChartSeries="@TempSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+    </MudItem>
+    <MudItem xs="12">
+        <MudChart ChartType="ChartType.Line" ChartSeries="@LightSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+    </MudItem>
+    <MudItem xs="12">
+        <MudChart ChartType="ChartType.Line" ChartSeries="@PressureSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+    </MudItem>
+</MudGrid>
+
+@code {
+    bool HasStart = false;
+    string LabelBtn = "Start Simulation";
+    int idx = -1;
+    bool IsRunning = false;
+    public List<WaterPositive.Kiosk.Data.SensorData> TimeSeriesData { get; set; } = new();
+    public List<ChartSeries> TempSeries = new List<ChartSeries>()
+{
+        new ChartSeries() { Name = "Temp", Data = new double[] { } },
+
+    };
+    public List<ChartSeries> LightSeries = new List<ChartSeries>()
+{
+        new ChartSeries() { Name = "Light", Data = new double[] { } },
+
+    };
+    public List<ChartSeries> PressureSeries = new List<ChartSeries>()
+{
+        new ChartSeries() { Name = "Pressure", Data = new double[] { } },
+
+    };
+    public string[] XAxisLabels = { };
+
+    Random random = new Random();
+    protected override void OnInitialized()
+    {
+        HubSvc.MessageReceived += ReceiveMessage;  
+    }
+
+    async void ReceiveMessage(object sender, MessageReceiveArgs msg)
+    {
+        var obj = JsonSerializer.Deserialize<WaterPositive.Kiosk.Data.SensorData>(msg.Message);
+        if (obj != null)
+        {
+            TimeSeriesData.Add(obj);
+            await RefreshChart();
+        }
+    }
+    public void Dispose()
+    {
+        HubSvc.MessageReceived -= ReceiveMessage;
+    }
+    private const string DEFAULT_CONSUMER_GROUP = "$Default";
+    async Task Setup()
+    {
+        if (HasStart) return;
+        await HubSvc.Start("myFirstDevice", "HostName=BmcIoTHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=1hyvQvLk7mWsQmBJ/MuTxWqiwr1nqtNnBs6gNqspta4=", DateTime.Now, DEFAULT_CONSUMER_GROUP);
+        HasStart = true;
+    }
+    async Task Cancel()
+    {
+        HubSvc.Cancel();
+        HasStart = false;
+    }
+    int DataPoints = 10;
+    public async Task RandomizeData()
+    {
+        if (IsRunning)
+        {
+            IsRunning = false;
+            LabelBtn = "Start Simulation";
+            return;
+        }
+        else
+        {
+            LabelBtn = "Stop Simulation";
+            IsRunning = true;
+        }
+
+       
+        TimeSeriesData.Clear();
+        while (IsRunning)
+        {
+            var newItem = new WaterPositive.Kiosk.Data.SensorData() { TimeStamp = DateTime.Now, Light = random.Next(10, 300), Pressure = random.Next(10, 100), Temp = random.Next(28, 38) };
+            TimeSeriesData.Add(newItem);
+            await RefreshChart();
+            await Task.Delay(1000);
+        }
+    }
+
+    async Task RefreshChart()
+    {
+        TempSeries[0].Data = TimeSeriesData.Select(x => x.Temp).TakeLast(DataPoints).ToArray();
+        PressureSeries[0].Data = TimeSeriesData.Select(x => x.Pressure).TakeLast(DataPoints).ToArray();
+        LightSeries[0].Data = TimeSeriesData.Select(x => x.Light).TakeLast(DataPoints).ToArray();
+        XAxisLabels = TimeSeriesData.Select(x => x.TimeStamp.ToString("HH:mm:ss")).TakeLast(DataPoints).ToArray();
+        await InvokeAsync(StateHasChanged);
+      
+    }
+}

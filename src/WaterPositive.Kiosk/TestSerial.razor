@@ -1,0 +1,67 @@
+﻿@page "/test-serial"
+@using System.Text.Json;
+
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form">
+                <MudTextField T="string" Label="Pesan" @bind-Value="CommandStr" Required="true" RequiredError="Isi command" />
+            </MudForm>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="SendCommand">Send</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="Reset">Reset</MudButton>
+
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"lines: ({messages.Count})")</MudText>
+                @foreach (var error in messages)
+            {
+                <MudText Color="@Color.Success">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+@code {
+    string CommandStr = string.Empty;
+    bool success;
+    List<string> messages = new();
+    SerialDevice device;
+    MudForm form;
+    async Task Reset()
+    {
+        messages.Clear();
+    }
+    protected override void OnInitialized()
+    {
+        device = new SerialDevice();
+        device.DataReceived += async (s, x) =>
+        {
+            try
+            {
+                OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
+                if (res != null)
+                {
+                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : { (string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
+                    await InvokeAsync( StateHasChanged);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        };
+
+    }
+    async Task SendCommand()
+    {
+        var res = device.SendMessage(CommandStr.ToUpper());
+        if (res)
+        {
+            CommandStr = string.Empty;
+        }
+
+    }
+}

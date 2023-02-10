@@ -31,9 +31,10 @@ namespace WaterPositive.Device
         public double FlowPerMinuteInMili { get; set; } = 1000 * 60; //60L
         Thread ThreadTimer;
         public bool IsOpen { get; set; } = false;
-        public SimulatedDevice()
+        SerialCom serial;
+        public SimulatedDevice(SerialCom SerialDevice)
         {
-            
+            this.serial = SerialDevice;
         }
         public OutputCls GetState()
         {
@@ -92,11 +93,14 @@ namespace WaterPositive.Device
         {
             info.Start = DateTime.Now;
             IsOpen = true;
+            OutputCls output = new OutputCls() { Result=true, Message="Flow data" };
             while (true)
             {
                 if (!IsOpen) break;
                 info.Volume += FlowPerMinuteInMili / 60;
                 info.End = DateTime.Now;
+                output.Data = JsonSerializer.SerializeObject(info);
+                this.serial.WriteMessage(JsonSerializer.SerializeObject(output));
                 Thread.Sleep(1000);
             }
         }

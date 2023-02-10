@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace WaterPositive.Device
@@ -14,11 +15,14 @@ namespace WaterPositive.Device
         static SerialCom serial;
         static void Main()
         {
-            device = new SimulatedDevice();
-            serial = new SerialCom(SC20260.UartPort.Uart1);
+          
+            serial = new SerialCom();
+            device = new SimulatedDevice(serial);
             serial.MessageReceive += (a) => {
                 OutputCls res;
-                switch (a.Message)
+                Regex reg = new Regex("\n");
+                var msg = reg.Replace(a.Message, "");
+                switch (msg)
                 {
                     case "OPEN":
                         res = device.Open();

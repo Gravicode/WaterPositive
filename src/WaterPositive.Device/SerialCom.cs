@@ -21,7 +21,7 @@ namespace WaterPositive.Device
 
         UartController myUart;
         public string ComPort { get; set; }
-        public SerialCom(string COM = SC20260.UartPort.Uart1)
+        public SerialCom(string COM = SC20260.UartPort.Uart5)
         {
             this.ComPort = COM;
             Setup();
@@ -29,7 +29,7 @@ namespace WaterPositive.Device
 
         public void WriteMessage(string Message)
         {
-            var txBuffer = Encoding.UTF8.GetBytes(Message);
+            var txBuffer = Encoding.UTF8.GetBytes(Message+Environment.NewLine);
             myUart.Write(txBuffer, 0, txBuffer.Length);
 
         }
