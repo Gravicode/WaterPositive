@@ -9,10 +9,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Include="Shared\Usercontrols\LoadingControl.razor" />
+		<None Include="Shared\Usercontrols\LookUpDialog.razor" />
+		<None Include="Shared\Usercontrols\MudConfirmDialog.razor" />
+		<None Include="Shared\Usercontrols\MudInfoDialog.razor" />
+		<None Include="Shared\Usercontrols\PictureDialog.razor" />
+		<None Include="Shared\Usercontrols\TableTemplate.razor" />
 		<None Include="wwwroot\index.html" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="7.0.52" />
 		<PackageReference Include="Microsoft.Azure.Devices" Version="1.38.2" />
 		<PackageReference Include="Microsoft.Azure.Devices.Shared" Version="1.30.2" />
@@ -22,10 +30,20 @@
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
 		<PackageReference Include="System.Text.Json" Version="7.0.1" />
 		<PackageReference Include="WindowsAzure.ServiceBus" Version="6.2.2" />
+		<PackageReference Include="ZXing.Net" Version="0.16.6" />
+		<PackageReference Include="ZXingBlazor" Version="0.2.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\WaterPositive.Models\WaterPositive.Models.csproj" />
+	  <ProjectReference Include="..\WaterPositive.Tools\WaterPositive.Tools.csproj" />
 	</ItemGroup>
-
+	<ItemGroup>
+		<Reference Include="GemBox.Document">
+			<HintPath>..\Dependencies\GemBox.Document.dll</HintPath>
+		</Reference>
+		<Reference Include="GemBox.Spreadsheet">
+			<HintPath>..\Dependencies\GemBox.Spreadsheet.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 </Project>

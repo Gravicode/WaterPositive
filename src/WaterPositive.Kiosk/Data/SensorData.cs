@@ -1,7 +1,7 @@
 ﻿using System;
 namespace WaterPositive.Kiosk.Data
 {
-    public class SensorData
+    public class SensorDataTemp
     {
         public double Temp { get; set; }
         public double Light { get; set; }

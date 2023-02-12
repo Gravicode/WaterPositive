@@ -54,13 +54,15 @@ namespace WaterPositive.Device
             var output = new OutputCls() { Result = false };
             if (IsOpen)
             {
-                output.Message = "valve is already open";
+                output.Message = "OPENED";
+                output.Data = "valve is already open";
                 return output;
             }
-            Reset();
+           
             ThreadTimer = new Thread(new ThreadStart(StartCounting));
             ThreadTimer.Start();
-            output.Message = "valve is open";
+            output.Message = "OPENED";
+            output.Data = "valve is open";
             output.Result = true;
             return output;
 
@@ -70,12 +72,14 @@ namespace WaterPositive.Device
             var output = new OutputCls() { Result = false };
             if (!IsOpen)
             {
-                output.Message = "valve is already close";
+                output.Message = "CLOSED";
+                output.Data = "valve is already close";
                 return output;
             }
             IsOpen = false;
             Thread.Sleep(1000); //hold on a sec
-            output.Message = "valve is closed";
+            output.Message = "CLOSED";
+            output.Data = "valve is closed";
             
             var result = JsonSerializer.SerializeObject(info);
             output.Data = result;
@@ -83,17 +87,33 @@ namespace WaterPositive.Device
             return output;
 
         }
-        void Reset()
+        public OutputCls Reset()
         {
+            var output = new OutputCls() { Result = false };
+            if (IsOpen)
+            {
+                output.Message = "RESET";
+                output.Data = "cannot reset when its opened";
+                return output;
+            }
+
             info.Start = DateTime.Now;
             info.End = DateTime.Now;
             info.Volume = 0;
+            
+            output.Message = "RESET";
+            output.Data = "reset ok";
+
+            var result = JsonSerializer.SerializeObject(info);
+            output.Data = result;
+            output.Result = true;
+            return output;
         }
         void StartCounting()
         {
             info.Start = DateTime.Now;
             IsOpen = true;
-            OutputCls output = new OutputCls() { Result=true, Message="Flow data" };
+            OutputCls output = new OutputCls() { Result=true, Message="FLOWING" };
             while (true)
             {
                 if (!IsOpen) break;

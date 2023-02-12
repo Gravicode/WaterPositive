@@ -1,110 +1,119 @@
 ﻿@inject IJSRuntime jsRuntime
-@using WaterPositive.Tools
-@using WaterPositive.Web.Helpers
-@using WaterPositive.Models
-@using WaterPositive.Web.Data
-@inject NavigationManager NavMgr
-@namespace WaterPositive.Web.Pages.Master
-@inject IToastService toastService
 @using System.IO
-@inject AzureBlobHelper blob
+@using WaterPositive.Tools;
+@inject IToastService toastService
+@inject UserProfileService service
+@inject AzureBlobHelper blob;
 
-<div class="modal" tabindex="-1" role="dialog" id="taskModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@CustomHeader</h5>
+@inject ISnackbar Snackbar
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3 mb-n1" />
+            @CustomHeader
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@TaskObject" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <input type="hidden" @bind="@TaskObject.Id" />
+                            <MudTextField Label="Nama" HelperText="Nama"
+                                          @bind-Value="TaskObject.FullName" For="@(() => TaskObject.FullName)" />
+
+                            <MudTextField Label="Email" Class="mt-3"
+                                          @bind-Value="TaskObject.Email" For="@(() => TaskObject.Email)" InputType="InputType.Email" />
+
+                            <MudTextField Label="Alamat" Class="mt-3"
+                                          @bind-Value="TaskObject.Alamat" For="@(() => TaskObject.Alamat)" InputType="InputType.Text" />
+
+                            <MudTextField Label="Phone" Class="mt-3"
+                                          @bind-Value="TaskObject.Phone" For="@(() => TaskObject.Phone)" InputType="InputType.Telephone" />
+                            <MudTextField Label="Password" Class="mt-3"
+                                          @bind-Value="TaskObject.Password" For="@(() => TaskObject.Password)" InputType="InputType.Password" />
+                            <MudTextField Label="Retype Password" Class="mt-3"
+                                          @bind-Value="RetypePass" For="@(() => RetypePass)" InputType="InputType.Password" />
 
 
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <EditForm Model="@TaskObject" OnValidSubmit="@HandleValidSubmit">
-                    <DataAnnotationsValidator />
+                            <MudSelect T="Roles" Label="Role" Required @bind-Value="@TaskObject.Role" AnchorOrigin="Origin.BottomCenter">
+                                <MudSelectItem Value="@(Roles.Operator)">@Roles.Operator.ToString()</MudSelectItem>
+                                <MudSelectItem Value="@(Roles.Admin)">@Roles.Admin.ToString()</MudSelectItem>
+                                <MudSelectItem Value="@(Roles.User)">@Roles.User.ToString()</MudSelectItem>
+                            </MudSelect>
 
-                    <div class="form-group">
-                        <label for="fullname"><b>Nama Lengkap</b></label>
-                        <input type="hidden" @bind-value="@TaskObject.Id" />
-                        <input @bind="TaskObject.FullName" type="text" class="form-control" id="txtNama" placeholder="Nama">
-                        <ValidationMessage For="@(() => TaskObject.FullName)" />
-                    </div>
+                            <div class="form-group">
+                                <label for="nim">Upload Foto</label>
+                                @if (!string.IsNullOrEmpty(FileUrl))
+                                {
+                                    <div class="alert alert-info">Foto sudah di upload.</div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning"> pilih foto Anda lalu tunggu sampai file selesai di upload.</div>
+                                }
+                                <BlazorInputFile.InputFile OnChange="HandleFileSelected" />
 
+                            </div>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Simpan</MudButton>
+                            <MudButton ButtonType="ButtonType.Button" OnClick="Cancel" Variant="Variant.Filled" Color="Color.Secondary">Cancel</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
 
-                    <div class="form-group">
-                        <label for="email"><b>Email (username)</b></label>
-                        <input @bind="TaskObject.Email" type="text" class="form-control" id="txtEmail" placeholder="Email">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone"><b>Telepon</b></label>
-                        <input @bind="TaskObject.Phone" type="text" class="form-control" id="txtNoHp" placeholder="No Hp">
-                    </div>
+            </MudGrid>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
 
-                    <div class="form-group">
-                        <label for="alamat"><b>Alamat</b></label>
-                        <textarea @bind="TaskObject.Alamat" class="form-control" id="txtAlamat" placeholder="Alamat"></textarea>
-                    </div>
-
-                     <div class="form-group">
-                        <label for="dapukan">Dapukan UB</label>
-                        <select @bind="@TaskObject.Role" id="dapukan">
-                            <option value="-">Pilih</option>
-                            <option value="@Roles.User">@Roles.User.ToString()</option>
-                            <option value="@Roles.Operator">@Roles.Operator.ToString()</option>
-@*                            @foreach (Roles item in Enum.GetValues(typeof(Roles)))
-                            {
-                                <option value="@item">@item.ToString()</option>
-
-                            }*@
-                        </select>
-                        <ValidationMessage For="@(() => TaskObject.Role)" />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nim">Upload Foto</label>
-                        @if (!string.IsNullOrEmpty(FileUrl))
-                        {
-                            <div class="alert alert-info">Foto sudah di upload.</div>
-                        }
-                        else
-                        {
-                            <div class="alert alert-warning"> pilih foto Anda lalu tunggu sampai file selesai di upload.</div>
-                        }
-                        <BlazorInputFile.InputFile OnChange="HandleFileSelected" />
-
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                </EditForm>
-
-            </div>
-        </div>
-    </div>
-</div>
+    </DialogActions>
+</MudDialog>
 
 @code {
-    string RetypePass;
     public string FileUrl { get; set; }
+    string RetypePass;
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
     [Parameter]
-    public RenderFragment CustomHeader { get; set; }
+    public string CustomHeader { get; set; }
     [Parameter]
     public UserProfile TaskObject { get; set; }
     [Parameter]
     public Action DataChanged { get; set; }
-    UserProfileService service;
+    async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            // Just load into .NET memory to show it can be done
+            // Alternatively it could be saved to disk, or parsed in memory, or similar
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+            var res = SKiaImageHelper.Resize(ms.ToArray(), 300, 300);
+            var bytes = res.FileContents;
+            string newName = $"foto_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_{file.Name}";
+            await AzureBlobHelper.UploadFile(newName, bytes);
+            FileUrl = $"{AppConstants.UploadUrlPrefix}/{newName}";
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
-        if (service == null) service = new UserProfileService();
         FileUrl = TaskObject.PicUrl;
     }
-    private async void HandleValidSubmit()
+    private void OnValidSubmit(EditContext context)
     {
-        if (string.IsNullOrEmpty( TaskObject.Email))
+        if (string.IsNullOrEmpty(TaskObject.Email))
         {
-            toastService.ShowError("Email harus diisi sebagai username","perhatian");
+            Snackbar.Add("Email harus diisi sebagai username",  Severity.Error);
             return;
         }
 
@@ -116,46 +125,27 @@
             TaskObject.Username = TaskObject.Email;
             if (service.IsUserExists(TaskObject.Username))
             {
-                toastService.ShowError("User dengan email ini sudah terdaftar","perhatian");
+                Snackbar.Add("User dengan email ini sudah terdaftar", Severity.Error);
                 return;
             }
             TaskObject.Password = enc.Encrypt(AppConstants.DefaultPass);
             var hasil = service.InsertData(TaskObject);
             if (!hasil)
             {
-                toastService.ShowError("Gagal menyimpan data. Isi data dengan lengkap.", "Perhatian");
+                Snackbar.Add("Gagal menyimpan data. Isi data dengan lengkap.", Severity.Error);
+                //toastService.ShowError("Gagal menyimpan data. Isi data dengan lengkap.", "Perhatian");
             }
         }
         else
         {
             service.UpdateData(TaskObject);
         }
-
-        await CloseTaskModal();
+        //In a real world scenario this bool would probably be a service to delete the item from api/database
+        Snackbar.Add("Data Saved", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(TaskObject.Id));
         DataChanged?.Invoke();
+       
+       
     }
-    
-    async Task HandleFileSelected(IFileListEntry[] files)
-    {
-        var file = files.FirstOrDefault();
-        if (file != null)
-        {
-            // Just load into .NET memory to show it can be done
-            // Alternatively it could be saved to disk, or parsed in memory, or similar
-            var ms = new MemoryStream();
-            await file.Data.CopyToAsync(ms);
-             var bytes = ImageHelper.FixedSize(ms, 300, 300, false);
-            string newName = $"foto_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_{file.Name}";
-            await AzureBlobHelper.UploadFile(newName, bytes);
-            FileUrl = $"https://storagemurahaje.blob.core.windows.net/portal-ub/{newName}";
-        }
-    }
-
-
-    private async Task CloseTaskModal()
-    {
-        await jsRuntime.InvokeAsync<object>("CloseModal", "taskModal");
-    }
-
 
 }

@@ -1,0 +1,132 @@
+﻿@page "/outlet"
+@using System.Text.Json;
+@inject NavigationManager NavMgr
+@inject WaterPriceService PriceSvc
+@inject WaterUsageService UsageSvc
+@inject AppState AppState
+@implements IDisposable
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form">
+                <MudTextField T="double" Label="Volume" @bind-Value="Volume" ReadOnly />
+                <MudTextField T="double" Label="Price" @bind-Value="Price" ReadOnly />
+            </MudForm>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="Open">Open</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" DisableElevation="true" OnClick="Close">Close</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" DisableElevation="true" OnClick="End">End</MudButton>
+
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"lines: ({messages.Count})")</MudText>
+                @foreach (var error in messages)
+            {
+                <MudText Color="@Color.Success">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+@code {
+    WaterPrice CurrentPrice;
+    double Volume = 0;
+    double Price = 0;
+    bool IsFlowing = false;
+    string CommandStr = string.Empty;
+    bool success;
+    List<string> messages = new();
+    SerialDevice device;
+    MudForm form;
+    async Task Reset()
+    {
+        messages.Clear();
+    }
+    async Task ResetDevice()
+    {
+
+        CommandStr = "RESET";
+        await SendCommand();
+
+    }
+
+    void IDisposable.Dispose()
+    {
+        device.Dispose();
+    }
+    async Task Open()
+    {
+        if (IsFlowing) return;
+        CommandStr = "OPEN";
+        await SendCommand();
+        IsFlowing = true;
+    }
+    async Task Close()
+    {
+        if (!IsFlowing) return;
+        CommandStr = "CLOSE";
+        IsFlowing = false;
+        await SendCommand();
+    }
+    async Task End()
+    {
+        if (IsFlowing) Close();
+        //insert to db
+        if (Volume > 0) {
+            WaterUsage usage = new WaterUsage() { UserId = AppState.CurrentUser.Id, TotalHarga = Price, Tanggal = DateTime.Now, Volume = Volume, WaterDepotId = AppConstants.WaterDepotId };
+            var res = UsageSvc.InsertData(usage);
+            if (res) {
+                AppState.CurrentUser = null;
+            }
+        }
+        NavMgr.NavigateTo("/");
+
+
+    }
+    protected override void OnInitialized()
+    {
+        
+        CurrentPrice = PriceSvc.GetCurrent();
+        device = new SerialDevice();
+        device.DataReceived += async (s, x) =>
+        {
+            try
+            {
+                OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
+                if (res != null)
+                {
+                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
+                    switch (res.Message)
+                    {
+                        case "FLOWING":
+                            var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
+                            if (msg != null)
+                            {
+                                Volume = msg.Volume;
+                                Price = (CurrentPrice.PricePerLiter / 1000) * Volume;
+                            }
+                             
+                            break;
+                    }
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        };
+        ResetDevice();
+    }
+    async Task SendCommand()
+    {
+        var res = device.SendMessage(CommandStr.ToUpper());
+        if (res)
+        {
+            CommandStr = string.Empty;
+        }
+
+    }
+}

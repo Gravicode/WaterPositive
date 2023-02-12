@@ -13,6 +13,15 @@ namespace WaterPositive.Kiosk
             var services = new ServiceCollection();
             services.AddMudServices();
             services.AddSingleton<HubProcessorService>();
+            services.AddSingleton<UserProfileService>();
+            services.AddTransient<WaterDepotService>();
+            services.AddTransient<CCTVService>();
+            services.AddTransient<DataCounterService>();
+            services.AddTransient<SensorDataService>();
+            services.AddTransient<WaterUsageService>();
+            services.AddTransient<UserProfileService>();
+            services.AddTransient<WaterPriceService>();
+            services.AddSingleton<AppState>();
 
             services.AddWindowsFormsBlazorWebView();
             blazorWebView1.HostPage = "wwwroot\\index.html";

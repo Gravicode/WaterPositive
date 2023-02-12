@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WaterPositive.Web.Data
+namespace WaterPositive.Kiosk.Data
 {
     public class AppConstants
     {
+        public static long WaterDepotId = 1;
         public static long MaxAllowedFileSize = 500 * 1024000;
         public static string StorageEndpoint = "";
         public static string StorageAccess = "";
@@ -24,6 +25,7 @@ namespace WaterPositive.Web.Data
         public static string BEARER_TOKEN_EDESK = "";
         
         public static string SQLConn = "";
+        public static string SQLCloud = "";
         public const string GemLic = "EDWG-SKFA-D7J1-LDQ5";
         public static string RedisCon { set; get; }
 

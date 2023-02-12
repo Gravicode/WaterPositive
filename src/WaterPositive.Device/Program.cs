@@ -40,6 +40,10 @@ namespace WaterPositive.Device
                         res = device.GetVersion();
                         serial.WriteMessage(JsonSerializer.SerializeObject(res));
                         break;  
+                    case "RESET":
+                        res = device.Reset();
+                        serial.WriteMessage(JsonSerializer.SerializeObject(res));
+                        break;  
                     default:
                         res = new OutputCls() { Message="Unknown command.", Result=false };
                         serial.WriteMessage(JsonSerializer.SerializeObject(res));

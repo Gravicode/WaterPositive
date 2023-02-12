@@ -363,6 +363,8 @@ namespace WaterPositive.Models
         public long  WaterDepotId { get; set; }
         [DataMember(Order = 7)]
         public WaterDepot WaterDepot { get; set; }
+        [DataMember(Order = 8)]
+        public double TotalHarga { get; set; }
 
     }
     public enum Roles { Admin, User, Operator }

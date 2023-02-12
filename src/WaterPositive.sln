@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterPositive.Device", "Wat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Json.TinyCLR", "Json.TinyCLR\Json.TinyCLR.csproj", "{13481660-7E5F-4863-9DA7-AEDC05D0D687}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterPositive.Kiosk", "WaterPositive.Kiosk\WaterPositive.Kiosk.csproj", "{880AA740-2C20-4C03-87B7-C212AA019488}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterPositive.Kiosk", "WaterPositive.Kiosk\WaterPositive.Kiosk.csproj", "{880AA740-2C20-4C03-87B7-C212AA019488}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

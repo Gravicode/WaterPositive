@@ -54,6 +54,7 @@ builder.Services.AddTransient<SensorDataService>();
 builder.Services.AddTransient<WaterUsageService>();
 builder.Services.AddTransient<UserProfileService>();
 builder.Services.AddTransient<WaterPriceService>();
+builder.Services.AddTransient<ReportService>();
 
 builder.Services.AddCors(options =>
 {
@@ -72,6 +73,7 @@ AppConstants.GMapApiKey = Configuration["GmapKey"];
 
 AppConstants.ReportPeopleCounter = Configuration["Reports:ReportPeopleCounter"];
 AppConstants.ReportWeather = Configuration["Reports:ReportWeather"];
+AppConstants.ReportKartu = Configuration["Reports:Kartu"];
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();

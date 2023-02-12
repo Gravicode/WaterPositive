@@ -150,6 +150,8 @@ else
         DataUser.Email = DataUser.Username;
         DataUser.Role = Roles.User;
         DataUser.Password = enc.Encrypt(DataUser.Password);
+        DataUser.UID = Tools.NumberGen.GenerateNumber(6);
+
         if (svc.InsertData(DataUser))
         {
             var msg = "Anda telah terdaftar di Water Positive, semoga bermanfaat. Terima Kasih";

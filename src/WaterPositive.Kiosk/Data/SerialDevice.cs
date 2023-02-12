@@ -44,6 +44,12 @@ namespace WaterPositive.Kiosk.Data
 
         }
 
+        public void Dispose()
+        {
+            this.uart.Close();
+            this.uart.Dispose();
+        }
+
         public bool SendMessage(string Message)
         {
             try
