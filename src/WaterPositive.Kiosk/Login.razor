@@ -12,7 +12,7 @@
         <MudPaper Class="pa-4">
             <MudForm @ref="form">
                 <MudTextField T="string" @ref="txtUID" Label="USER ID" @bind-Value="UID" @onkeyup="KeyUp" Required="true" RequiredError="User ID is required!" />
-                <MudTextField T="string" Label="PIN" @bind-Value="PIN"  Validation="@(new Func<string, IEnumerable<string>>(CheckPin))" />
+                <MudTextField T="string" @ref="txtPIN" Label="PIN" @bind-Value="PIN" @onkeyup="KeyUp" Validation="@(new Func<string, IEnumerable<string>>(CheckPin))" />
             </MudForm>
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
@@ -39,15 +39,16 @@
                Close="(()=>ShowScanBarcode=!ShowScanBarcode)"
                ScanBtnTitle="Scan"
                ResetBtnTitle="Reset"
-               CloseBtnTitle="Close" 
+               CloseBtnTitle="Close"
                SelectDeviceBtnTitle="Select Device" />
 }
 @code {
     MudTextField<string> txtUID;
+    MudTextField<string> txtPIN;
     async Task KeyUp(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
-        {  
+        {
             Submit();
         }
     }
@@ -78,32 +79,38 @@
         if (res != null)
         {
             if (!string.IsNullOrEmpty(res.PIN))
-            if (res.PIN != pin)
-            {
-                yield return "wrong PIN, try again.";
-            }
+                if (string.IsNullOrEmpty(pin))
+                {
+                    txtPIN.FocusAsync();
+                    yield return "please input PIN.";
+                }
+                else
+                if (res.PIN != pin)
+                {
+                    yield return "wrong PIN, try again.";
+                }
         }
         else
         {
             yield return "Unknown UID, try again.";
         }
-        
-        }
 
-        async Task Submit()
+    }
+
+    async Task Submit()
+    {
+        var res = CheckPin(PIN);
+        if (res.Any())
         {
-            var res = CheckPin(PIN);
-            if (res.Any())
-            {
-                errors.Clear();
-                errors.AddRange(res);
-            }
-            else
-            {
-                var user = UserSvc.GetDataByUID(UID);
-                AppState.CurrentUser = user;
-                NavMgr.NavigateTo("outlet");
-            }
+            errors.Clear();
+            errors.AddRange(res);
         }
+        else
+        {
+            var user = UserSvc.GetDataByUID(UID);
+            AppState.CurrentUser = user;
+            NavMgr.NavigateTo("outlet");
+        }
+    }
 
 }
