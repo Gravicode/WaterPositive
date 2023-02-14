@@ -11,7 +11,7 @@
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">
             <MudForm @ref="form">
-                <MudTextField T="string" Label="USER ID" @bind-Value="UID" Required="true" RequiredError="User ID is required!" />
+                <MudTextField T="string" @ref="txtUID" Label="USER ID" @bind-Value="UID" @onkeyup="KeyUp" Required="true" RequiredError="User ID is required!" />
                 <MudTextField T="string" Label="PIN" @bind-Value="PIN"  Validation="@(new Func<string, IEnumerable<string>>(CheckPin))" />
             </MudForm>
         </MudPaper>
@@ -43,7 +43,24 @@
                SelectDeviceBtnTitle="Select Device" />
 }
 @code {
-
+    MudTextField<string> txtUID;
+    async Task KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {  
+            Submit();
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (txtUID != null) txtUID.AutoFocus = true;
+        }
+    }
+    protected override void OnInitialized()
+    {
+    }
     async Task ShowScanner()
     {
         ShowScanBarcode = !ShowScanBarcode;

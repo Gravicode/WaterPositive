@@ -22,6 +22,7 @@ namespace WaterPositive.Kiosk
             services.AddTransient<UserProfileService>();
             services.AddTransient<WaterPriceService>();
             services.AddSingleton<AppState>();
+            services.AddTransient<SerialDevice>();
 
             services.AddWindowsFormsBlazorWebView();
             blazorWebView1.HostPage = "wwwroot\\index.html";

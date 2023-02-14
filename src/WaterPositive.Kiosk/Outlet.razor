@@ -4,6 +4,7 @@
 @inject WaterPriceService PriceSvc
 @inject WaterUsageService UsageSvc
 @inject AppState AppState
+@inject SerialDevice device
 @implements IDisposable
 <MudGrid>
     <MudItem xs="12" sm="7">
@@ -38,7 +39,7 @@
     string CommandStr = string.Empty;
     bool success;
     List<string> messages = new();
-    SerialDevice device;
+    
     MudForm form;
     async Task Reset()
     {
@@ -89,7 +90,7 @@
     {
         
         CurrentPrice = PriceSvc.GetCurrent();
-        device = new SerialDevice();
+        
         device.DataReceived += async (s, x) =>
         {
             try

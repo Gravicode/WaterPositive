@@ -19,7 +19,12 @@ namespace WaterPositive.Kiosk.Data
         bool IsInit = false;
 
         SerialPort uart;
-        public SerialDevice(string ComPort = "COM8")
+
+        public SerialDevice():this(AppConstants.ComPort)
+        {
+
+        }
+        public SerialDevice(string ComPort)
         {
             try
             {

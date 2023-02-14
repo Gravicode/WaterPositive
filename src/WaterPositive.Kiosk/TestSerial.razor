@@ -1,6 +1,6 @@
 ﻿@page "/test-serial"
 @using System.Text.Json;
-
+@inject SerialDevice device
 <MudGrid>
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">
@@ -28,7 +28,7 @@
     string CommandStr = string.Empty;
     bool success;
     List<string> messages = new();
-    SerialDevice device;
+    
     MudForm form;
     async Task Reset()
     {
@@ -36,7 +36,7 @@
     }
     protected override void OnInitialized()
     {
-        device = new SerialDevice();
+        
         device.DataReceived += async (s, x) =>
         {
             try

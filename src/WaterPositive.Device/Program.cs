@@ -16,7 +16,8 @@ namespace WaterPositive.Device
         static void Main()
         {
           
-            serial = new SerialCom();
+            //serial = new SerialCom(SC20260.UartPort.Uart5);
+            serial = new SerialCom(SC20260.UartPort.Uart1);
             device = new SimulatedDevice(serial);
             serial.MessageReceive += (a) => {
                 OutputCls res;
