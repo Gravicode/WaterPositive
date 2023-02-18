@@ -8,6 +8,7 @@
 @inject IToastService toastService
 @inject NavigationManager NavMgr
 @inject ISnackbar Snackbar
+@inject UserProfileService UserSvc
 
 <AuthorizeView>
     <Authorized>
@@ -97,8 +98,17 @@
         }
         else
         {
-            string logUrl = $"/login?paramUsername={encode(Username)}&paramPassword={encode(Password)}";
-            await jsRuntime.InvokeAsync<object>("OpenUrl", logUrl);
+            if (UserSvc.Login(Username, Password))
+            {
+                string logUrl = $"/login?paramUsername={encode(Username)}&paramPassword={encode(Password)}";
+                await jsRuntime.InvokeAsync<object>("OpenUrl", logUrl);
+            }
+            else
+            {
+                ErrMsg = "Username/Password tidak valid.";
+                Snackbar.Add(ErrMsg, Severity.Error);
+            }
+           
         }
         //NavMgr.NavigateTo(logUrl);
     }

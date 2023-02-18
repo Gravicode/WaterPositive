@@ -34,7 +34,18 @@ namespace WaterPositive.Web.Data
             }
             return false;
         }
-
+        public bool Login(string username, string password)
+        {
+            bool isAuthenticate = false;
+            var usr = db.UserProfiles.Where(x => x.Username == username).FirstOrDefault();
+            if (usr != null)
+            {
+                var enc = new Encryption();
+                var pass = enc.Decrypt(usr.Password);
+                isAuthenticate = pass == password;
+            }
+            return isAuthenticate;
+        }
         public UserProfile GetItemByEmail(string Email)
         {
             if (string.IsNullOrEmpty(Email)) return null;

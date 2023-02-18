@@ -29,6 +29,10 @@
 
                             <MudTextField Label="Alamat" Class="mt-3"
                                           @bind-Value="TaskObject.Alamat" For="@(() => TaskObject.Alamat)" InputType="InputType.Text" />
+                            <MudTextField Label="PIN" Class="mt-3"
+                                          @bind-Value="TaskObject.PIN" For="@(() => TaskObject.PIN)" InputType="InputType.Password" />
+                            <MudTextField Label="No Kartu" Class="mt-3"
+                                          @bind-Value="TaskObject.UID" For="@(() => TaskObject.UID)" InputType="InputType.Text" />
 
                             <MudTextField Label="Phone" Class="mt-3"
                                           @bind-Value="TaskObject.Phone" For="@(() => TaskObject.Phone)" InputType="InputType.Telephone" />
@@ -54,8 +58,8 @@
                                 {
                                     <div class="alert alert-warning"> pilih foto Anda lalu tunggu sampai file selesai di upload.</div>
                                 }
-                                <BlazorInputFile.InputFile OnChange="HandleFileSelected" />
 
+                                <InputFile id="fileInput1" Size="Size.Small" OnChange="HandleFileSelected" />
                             </div>
                         </MudCardContent>
                         <MudCardActions>
@@ -89,21 +93,20 @@
     public UserProfile TaskObject { get; set; }
     [Parameter]
     public Action DataChanged { get; set; }
-    async Task HandleFileSelected(IFileListEntry[] files)
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+
     {
-        var file = files.FirstOrDefault();
+        var file = e.File;
         if (file != null)
         {
-            // Just load into .NET memory to show it can be done
-            // Alternatively it could be saved to disk, or parsed in memory, or similar
             var ms = new MemoryStream();
-            await file.Data.CopyToAsync(ms);
-            var res = SKiaImageHelper.Resize(ms.ToArray(), 300, 300);
-            var bytes = res.FileContents;
+            await file.OpenReadStream(AppConstants.MaxAllowedFileSize).CopyToAsync(ms);
+            string Ext = Path.GetExtension(file.Name);
             string newName = $"foto_{DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")}_{file.Name}";
-            await AzureBlobHelper.UploadFile(newName, bytes);
+            await AzureBlobHelper.UploadFile(newName, ms.ToArray());
             FileUrl = $"{AppConstants.UploadUrlPrefix}/{newName}";
         }
+
     }
     protected override async Task OnInitializedAsync()
     {
@@ -113,7 +116,7 @@
     {
         if (string.IsNullOrEmpty(TaskObject.Email))
         {
-            Snackbar.Add("Email harus diisi sebagai username",  Severity.Error);
+            Snackbar.Add("Email harus diisi sebagai username", Severity.Error);
             return;
         }
 
@@ -138,14 +141,16 @@
         }
         else
         {
+            TaskObject.UpdatedDate = DateHelper.GetLocalTimeNow();
+
             service.UpdateData(TaskObject);
         }
         //In a real world scenario this bool would probably be a service to delete the item from api/database
         Snackbar.Add("Data Saved", Severity.Success);
         MudDialog.Close(DialogResult.Ok(TaskObject.Id));
         DataChanged?.Invoke();
-       
-       
+
+
     }
 
 }

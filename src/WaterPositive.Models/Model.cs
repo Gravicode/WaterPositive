@@ -210,6 +210,10 @@ namespace WaterPositive.Models
         public string? Longitude { get; set; }
         [InverseProperty(nameof(WaterUsage.WaterDepot))]
         public ICollection<WaterUsage> WaterUsages { get; set; }
+        [DataMember(Order = 8)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 9)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
     }
 
     [DataContract]
@@ -233,6 +237,10 @@ namespace WaterPositive.Models
         public string? Latitude { get; set; }
         [DataMember(Order = 8)]
         public string? Longitude { get; set; }
+        [DataMember(Order = 9)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 10)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
     }
 
     [DataContract]
@@ -265,6 +273,10 @@ namespace WaterPositive.Models
         [DataMember(Order = 9)]
         [MaxLength(300)]
         public string? Tags { get; set; }
+        [DataMember(Order = 10)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 11)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
     }
     [DataContract]
     public class SensorData
@@ -297,6 +309,10 @@ namespace WaterPositive.Models
         public long WaterDepotId { get; set; }
         [DataMember(Order = 11)]
         public WaterDepot WaterDepot { get; set; }
+        [DataMember(Order = 12)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 13)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
 
 
     }
@@ -336,6 +352,10 @@ namespace WaterPositive.Models
         public Roles Role { set; get; } = Roles.User;
         [InverseProperty(nameof(WaterUsage.User))]
         public ICollection<WaterUsage> WaterUsages { get; set; }
+        [DataMember(Order = 14)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 15)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
 
     }
     [DataContract]
@@ -365,6 +385,10 @@ namespace WaterPositive.Models
         public WaterDepot WaterDepot { get; set; }
         [DataMember(Order = 8)]
         public double TotalHarga { get; set; }
+        [DataMember(Order = 9)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 10)]
+        public DateTime? SyncDate { get; set; } = null;
 
     }
     public enum Roles { Admin, User, Operator }
@@ -392,6 +416,8 @@ namespace WaterPositive.Models
         
         [DataMember(Order = 8)]
         public DateTime? UpdatedDate { get; set; }
+        [DataMember(Order = 9)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
 
     }
     #endregion

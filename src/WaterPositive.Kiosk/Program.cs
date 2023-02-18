@@ -26,26 +26,9 @@ namespace WaterPositive.Kiosk
             AppConstants.ComPort = ConfigurationManager.AppSettings["ComPort"];
             var db = new WaterPositiveDB(true);
             db.Database.EnsureCreated();
-            var db_remote = new WaterPositiveDB(false);
+        
 
-            //sync if needed
-            if (db.UserProfiles.Count() != db_remote.UserProfiles.Count())
-            {
-                db.Database.ExecuteSqlRaw("DELETE FROM WaterUsages");
-                db.Database.ExecuteSqlRaw("DELETE FROM UserProfiles");
-                db.Database.ExecuteSqlRaw("DELETE FROM WaterDepots");
-                db.Database.ExecuteSqlRaw("DELETE FROM WaterPrices");
-
-
-
-                var users = db_remote.UserProfiles.ToList();
-                var depots = db_remote.WaterDepots.ToList();
-                var prices = db_remote.WaterPrices.ToList();
-                db.UserProfiles.AddRange(users);
-                db.WaterDepots.AddRange(depots);
-                db.WaterPrices.AddRange(prices);
-                db.SaveChanges();
-            }
+            
         }
     }
 }

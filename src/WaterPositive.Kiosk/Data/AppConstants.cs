@@ -7,7 +7,7 @@ namespace WaterPositive.Kiosk.Data
 {
     public class AppConstants
     {
-        public static string ComPort = "COM4";
+        public static string ComPort = "COM9";
         public static long WaterDepotId = 1;
         public static long MaxAllowedFileSize = 500 * 1024000;
         public static string StorageEndpoint = "";

@@ -92,6 +92,8 @@
         }
         else
         {
+            TaskObject.UpdatedDate = DateHelper.GetLocalTimeNow();
+
             service.UpdateData(TaskObject);
         }
 

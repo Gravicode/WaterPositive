@@ -59,7 +59,21 @@ namespace WaterPositive.Web.Data
             return false;
 
         }
+        public bool InsertDatas(List<WaterUsage> datas)
+        {
+            try
+            {
+                db.WaterUsages.AddRange(datas);
+                db.SaveChanges();
+                return true;
+            }
+            catch
+            {
 
+            }
+            return false;
+
+        }
 
 
         public bool UpdateData(WaterUsage data)

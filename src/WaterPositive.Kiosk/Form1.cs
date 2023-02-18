@@ -7,8 +7,12 @@ namespace WaterPositive.Kiosk
 {
     public partial class Form1 : Form
     {
+        System.Timers.Timer SyncTimer;
+        bool IsSync = false;
+        SyncHelper sync;
         public Form1()
         {
+            
             InitializeComponent();
             var services = new ServiceCollection();
             services.AddMudServices();
@@ -28,6 +32,24 @@ namespace WaterPositive.Kiosk
             blazorWebView1.HostPage = "wwwroot\\index.html";
             blazorWebView1.Services = services.BuildServiceProvider();
             blazorWebView1.RootComponents.Add<App>("#app");
+            Setup();
+            sync.SyncData();
+        }
+
+        void Setup()
+        {
+            SyncTimer = new System.Timers.Timer(new TimeSpan(0, 5, 0));
+            var db = new WaterPositiveDB(true);
+            db.Database.EnsureCreated();
+            var db_remote = new WaterPositiveDB(false);
+            sync = new SyncHelper(db,db_remote);
+            SyncTimer.Elapsed += async(a, b) => {
+                if (IsSync) return;
+                IsSync = true;
+                var res = await sync.SyncData();
+                IsSync = false;
+            };
+            SyncTimer.Start();
         }
     }
 }

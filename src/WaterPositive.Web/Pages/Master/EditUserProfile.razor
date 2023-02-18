@@ -121,6 +121,8 @@
 
         DataUser.Email = DataUser.Username;
         DataUser.Password = enc.Encrypt(DataUser.Password);
+        DataUser.UpdatedDate = DateHelper.GetLocalTimeNow();
+
         if (service.UpdateData(DataUser))
         {
             Snackbar.Add("Profile Anda sudah berhasil di update. Terima kasih", Severity.Success);
