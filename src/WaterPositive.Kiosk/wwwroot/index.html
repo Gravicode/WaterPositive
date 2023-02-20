@@ -1,13 +1,17 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WinFormsBlazor</title>
     <base href="/" />
     <link href="css/app.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="assets/vendors/animate/animate.min.css" />
+    <link rel="stylesheet" href="assets/css/fonts.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.png">
+  
 </head>
 
 <body>
@@ -21,7 +25,13 @@
     </div>
 
     <script src="_framework/blazor.webview.js"></script>
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script type="text/javascript" src="assets/vendors/jquery/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="assets/js/scripts.js"></script>
+    <script type="text/javascript">
+        function SetFocus(elementid) {
+            document.getElementById(elementid).focus();
+        }
+    </script>
 </body>
 
 </html>

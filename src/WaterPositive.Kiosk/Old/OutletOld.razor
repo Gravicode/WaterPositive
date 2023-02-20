@@ -1,4 +1,4 @@
-﻿@page "/outlet"
+﻿@page "/outlet-old"
 @using System.Text.Json;
 @inject NavigationManager NavMgr
 @inject WaterPriceService PriceSvc
@@ -6,56 +6,32 @@
 @inject AppState AppState
 @inject SerialDevice device
 @implements IDisposable
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form">
+                <MudTextField T="double" Label="Volume" @bind-Value="Volume" ReadOnly />
+                <MudTextField T="double" Label="Price" @bind-Value="Price" ReadOnly />
+            </MudForm>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="Open">Open</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" DisableElevation="true" OnClick="Close">Close</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" DisableElevation="true" OnClick="End">End</MudButton>
 
-<div class="container">
-    <div class="header">
-        <div class="logos">
-            <a class="logo-water" href="/"><img src="assets/img/water-positif.svg" alt=""></a>
-            <a class="logo-aws" href=""><img src="assets/img/aws.svg" alt=""></a>
-            <a class="logo-habitat" href=""><img src="assets/img/habitat-id.svg" alt=""></a>
-            <a class="logo-alkademi" href=""><img src="assets/img/alkademi.svg" alt=""></a>
-        </div>
-        <div class="title">
-            ARGO PEMAKAIAN AIR
-        </div>
-    </div>
-    <div class="message">
-        <div class="userblock">
-            <div class="user">Hai @AppState.CurrentUser.FullName</div>
-            <div class="date">@CurrentTime.ToString("dd MMM yyyy HH:mm:ss")</div>
-        </div>
-    </div>
-    <div class="content">
-        <form action="">
-            <div class="input">
-                <label for="txtNoKartu" >Liter (L)</label>
-                <input type="text" id="txtNoKartu" @bind="Volume" readonly />
-            </div>
-            <div class="input">
-                <label for="txtPin">Harga (Rp)</label>
-                <input type="text" id="txtPin" @bind="Price" readonly  />
-            </div>
-            <div class="input">
-                <label for="txtLog">Logs</label>
-                <ul class="div-scroll">
-                    @foreach (var message in messages)
-                    {
-                        <li>@message</li>
-                    }
-                </ul>
-            </div>
-        </form>
-    </div>
-</div>
-<div class="footer medium">
-    <button class="green" @onclick="Open">Buka Keran</button>
-    <button class="red" @onclick="Close">Tutup Keran</button>
-    <button class="orange" @onclick="End">Selesai</button>
-</div>
-
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"lines: ({messages.Count})")</MudText>
+                @foreach (var error in messages)
+            {
+                <MudText Color="@Color.Success">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 @code {
-    DateTime CurrentTime = DateTime.Now;
-    BlazorTimer timer;
     WaterPrice CurrentPrice;
     double Volume = 0;
     double Price = 0;
@@ -64,6 +40,7 @@
     bool success;
     List<string> messages = new();
 
+    MudForm form;
     async Task Reset()
     {
         messages.Clear();
@@ -98,10 +75,12 @@
     {
         if (IsFlowing) Close();
         //insert to db
-        if (Volume > 0) {
+        if (Volume > 0)
+        {
             WaterUsage usage = new WaterUsage() { UserId = AppState.CurrentUser.Id, TotalHarga = Price, Tanggal = DateTime.Now, Volume = Volume, WaterDepotId = AppConstants.WaterDepotId };
             var res = UsageSvc.InsertData(usage);
-            if (res) {
+            if (res)
+            {
                 AppState.CurrentUser = null;
             }
         }
@@ -143,13 +122,6 @@
             }
         };
         ResetDevice();
-        timer = new();
-        timer.SetTimer(1000);
-        timer.OnElapsed += async () =>
-        {
-            CurrentTime = DateTime.Now;
-            await InvokeAsync(StateHasChanged);
-        };
     }
     async Task SendCommand()
     {

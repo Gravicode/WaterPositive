@@ -9,12 +9,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="wwwroot\index-mud.html" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="Shared\Usercontrols\LoadingControl.razor" />
 		<None Include="Shared\Usercontrols\LookUpDialog.razor" />
 		<None Include="Shared\Usercontrols\MudConfirmDialog.razor" />
 		<None Include="Shared\Usercontrols\MudInfoDialog.razor" />
 		<None Include="Shared\Usercontrols\PictureDialog.razor" />
 		<None Include="Shared\Usercontrols\TableTemplate.razor" />
+		<None Include="wwwroot\index-mud.html" />
 		<None Include="wwwroot\index.html" />
 	</ItemGroup>
 

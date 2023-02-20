@@ -1,0 +1,47 @@
+* { font-family: "gilmer", CenturyGothic, AppleGothic, sans-serif; line-height: 1.3em; }
+body,html { min-height: 100vh;padding: 0;margin: 0;}
+.container {padding: 4em;}
+.logos img {height: 4em;}
+.logos {display: flex;gap: 2em;}
+.header {display: flex;align-items: center;}
+.header>.title {margin-left: auto;font-size: 2.4em;font-weight: bold;}
+.footer {position: fixed;bottom: 0;left: 0;right: 0;display: flex;}
+.footer>* {flex-grow: 1;flex-basis: 0;}
+a.logo-aws>img {height: 2.4em;}
+a.logo-aws, a.logo-alkademi {display: flex;justify-content: center;align-items: center;}
+a.logo-alkademi>img {height: 2.5em;}
+.message {background: #E9F0FF;margin: 1.5em 0 1em;padding: 0.5em 1em;font-size: 1.7em;border-radius: 0.5em;font-weight: 500;color: #4D88FF;}
+.input {display: flex;font-size: 3.7em;font-weight: 500;margin: 0.5em 0;align-items: center;}
+.input>label {min-width: 6em;}
+.input>input {font-size: 1.2em;padding: 0.2em 0.5em;flex-grow: 1;width: 100%;box-sizing: border-box;display: block;border: 0;background: #E6E6E6;font-weight: 500;color: #7D7D7D;}
+.footer>button {font-size: 4em;font-weight: 500;padding: 0.8em 0.5em;border: 0;color: #fff;background: #878787;cursor: pointer;display: flex;align-items: center;justify-content: center;}
+.footer>button:hover {background: #777;}
+.footer>button:active {color: #999;}
+.footer>button.green {background: #16CC8E;}
+.footer>button.green:hover {background: #1AAE7B;}
+.footer>button.green:active {color: #378F71;}
+.footer>button.red {background: #FF084D;}
+.footer>button.red:hover {background: #BE093B;}
+.footer>button.red:active {color: #8D1536;}
+.footer>button.orange {background: #FFA63B;}
+.footer>button.orange:hover {background: #C58232;}
+.footer>button.orange:active {color: #986323;}
+.footer.medium>button {font-size: 3.4em;}
+.userblock {display: flex;}
+.userblock>.date {margin-left: auto;}
+
+
+@media only screen and (max-width: 600px) {
+    .container { padding: 1.2em; }
+    .header {flex-wrap: wrap; }
+    .header>.title {margin-left: 0;font-size: 1.7em;font-weight: bold;width: 100%;margin-top: 1em;}
+    .logos img {height: 2em;}
+    .logos {display: flex;gap: 1em;flex-wrap: wrap;}
+    a.logo-aws>img {height: 1.5em;}
+    a.logo-alkademi>img {height: 1.3em;}
+    .input {display: flex;font-size: 1.5em;font-weight: 500;margin: 0.5em 0;flex-direction: column;align-items: flex-start;}
+    .message { font-size: 1.4em;}
+    .footer.medium>button {font-size: 1.5em;flex-grow: 1;flex-basis: 0;}
+    .input>input{padding: 0.5em;}
+    .footer>button {font-size: 1.7em;}
+}

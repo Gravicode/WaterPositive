@@ -7,31 +7,53 @@
 @inject NavigationManager NavMgr
 @inject UserProfileService UserSvc
 @inject AppState AppState
-<MudGrid>
-    <MudItem xs="12" sm="7">
-        <MudPaper Class="pa-4">
-            <MudForm @ref="form">
-                <MudTextField T="string" @ref="txtUID" Label="USER ID" @bind-Value="UID" @onkeyup="KeyUp" Required="true" RequiredError="User ID is required!" />
-                <MudTextField T="string" @ref="txtPIN" Label="PIN" @bind-Value="PIN" @onkeyup="KeyUp" Validation="@(new Func<string, IEnumerable<string>>(CheckPin))" />
-            </MudForm>
-        </MudPaper>
-        <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=>Submit())">Masuk</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="@(()=>form.Reset())" Class="mx-2">Reset</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Success" DisableElevation="true" OnClick="ShowScanner" Class="mx-2">Scan QR</MudButton>
-
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({errors.Count})")</MudText>
-                @foreach (var error in errors)
+@inject IJSRuntime IJS
+<div class="container">
+    <div class="header">
+        <div class="logos">
+            <a class="logo-water" href="/"><img src="assets/img/water-positif.svg" alt=""></a>
+            <a class="logo-aws" href=""><img src="assets/img/aws.svg" alt=""></a>
+            <a class="logo-habitat" href=""><img src="assets/img/habitat-id.svg" alt=""></a>
+            <a class="logo-alkademi" href=""><img src="assets/img/alkademi.svg" alt=""></a>
+        </div>
+        <div class="title">
+            OUTLET AIR BERSIH
+        </div>
+    </div>
+    <div class="message">
+        Silahkan Scan QR dengan kartu Anda atau masukkan No Kartu dan PIN
+    </div>
+    <div class="content">
+        <form action="">
+            <div class="input">
+                <label for="txtNoKartu">No Kartu</label>
+                <input type="text" @bind="UID" @onkeyup="KeyUp"  id="txtNoKartu" />
+            </div>
+            <div class="input">
+                <label for="txtPin">PIN</label>
+                <input type="text" @bind="PIN" @onkeyup="KeyUp" id="txtPin" />
+            </div>
+            @if (errors.Count > 0)
             {
-                <MudText Color="@Color.Error">@error</MudText>
+                <div class="input">
+                    <label for="txtPin">Error</label>
+                    <ul class="alert alert-warning">
+                        @foreach (var error in errors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>               
+            </div>
             }
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+        </form>
+    </div>
+</div>
+<div class="footer">
+    <button class="green" @onclick="@(()=>Submit())">Masuk</button>
+    <button class="gray" @onclick="@(()=>Reset())">Ulang</button>
+    <button style="display:none;" class="orange" @onclick="ShowScanner">Scan QR</button>
+</div>
+
 @if (ShowScanBarcode)
 {
     <BarcodeReader ScanResult="((e) => { UID =e; ShowScanBarcode = !ShowScanBarcode; })"
@@ -43,8 +65,12 @@
                SelectDeviceBtnTitle="Select Device" />
 }
 @code {
-    MudTextField<string> txtUID;
-    MudTextField<string> txtPIN;
+    async Task Reset()
+    {
+        PIN = string.Empty;
+        UID = string.Empty;
+        await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
+    }
     async Task KeyUp(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
@@ -56,7 +82,8 @@
     {
         if (firstRender)
         {
-            if (txtUID != null) txtUID.AutoFocus = true;
+            await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
+            //if (txtUID != null) txtUID.AutoFocus = true;
         }
     }
     protected override void OnInitialized()
@@ -81,7 +108,8 @@
             if (!string.IsNullOrEmpty(res.PIN))
                 if (string.IsNullOrEmpty(pin))
                 {
-                    txtPIN.FocusAsync();
+                    IJS.InvokeVoidAsync("SetFocus", "txtPin");
+                    //txtPIN.FocusAsync();
                     yield return "please input PIN.";
                 }
                 else
