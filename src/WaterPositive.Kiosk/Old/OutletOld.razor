@@ -93,34 +93,34 @@
 
         CurrentPrice = PriceSvc.GetCurrent();
 
-        device.DataReceived += async (s, x) =>
-        {
-            try
-            {
-                OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
-                if (res != null)
-                {
-                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
-                    switch (res.Message)
-                    {
-                        case "FLOWING":
-                            var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
-                            if (msg != null)
-                            {
-                                Volume = msg.Volume;
-                                Price = (CurrentPrice.PricePerLiter / 1000) * Volume;
-                            }
+        //device.DataReceived += async (s, x) =>
+        //{
+        //    try
+        //    {
+        //        OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
+        //        if (res != null)
+        //        {
+        //            messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
+        //            switch (res.Message)
+        //            {
+        //                case "FLOWING":
+        //                    var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
+        //                    if (msg != null)
+        //                    {
+        //                        Volume = msg.Volume;
+        //                        Price = (CurrentPrice.PricePerLiter / 1000) * Volume;
+        //                    }
 
-                            break;
-                    }
-                    await InvokeAsync(StateHasChanged);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        };
+        //                    break;
+        //            }
+        //            await InvokeAsync(StateHasChanged);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex);
+        //    }
+        //};
         ResetDevice();
     }
     async Task SendCommand()

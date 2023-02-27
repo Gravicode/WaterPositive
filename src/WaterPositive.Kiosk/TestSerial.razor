@@ -44,7 +44,8 @@
                 OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
                 if (res != null)
                 {
-                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : { (string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
+                    var dataStr = JsonSerializer.Serialize(x.Data);
+                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(dataStr) ? res.Message : res.Data)}");
                     await InvokeAsync( StateHasChanged);
                 }
             }

@@ -28,7 +28,7 @@ namespace WaterPositive.Kiosk.Data
         {
             try
             {
-                uart = new SerialPort(ComPort, 115200, Parity.None, 8, StopBits.One);
+                uart = new SerialPort(ComPort, 9600, Parity.None, 8, StopBits.One);
                 uart.DataReceived += Uart_DataReceived;
 
                 // if dealing with massive data input, increase the buffer size

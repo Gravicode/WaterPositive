@@ -183,7 +183,19 @@ namespace WaterPositive.Models
         [DataMember(Order = 2)]
         public string Message { get; set; }
         [DataMember(Order = 3)]
-        public string Data { get; set; }
+        public OutputClsData Data { get; set; }
+    }
+    [DataContract]
+    public class OutputClsData
+    {
+        [DataMember(Order = 1)]
+        public float Flow { get; set; }
+        [DataMember(Order = 2)]
+        public float Toren { get; set; }
+        [DataMember(Order = 3)]
+        public float Ph { get; set; }
+        [DataMember(Order = 4)]
+        public float Tds { get; set; }
     }
     #endregion
     #region database

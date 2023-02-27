@@ -21,19 +21,22 @@
     </div>
     <div class="message">
         <div class="userblock">
-            <div class="user">Hai @AppState.CurrentUser.FullName</div>
-            <div class="date">@CurrentTime.ToString("dd MMM yyyy HH:mm:ss")</div>
+            @if (AppState is not null && AppState.CurrentUser is not null)
+            {
+                <div class="user">Hai @AppState.CurrentUser.FullName</div>
+                <div class="date">@CurrentTime.ToString("dd MMM yyyy HH:mm:ss")</div>
+            }
         </div>
     </div>
     <div class="content">
         <form action="">
             <div class="input">
                 <label for="txtNoKartu" >Liter (L)</label>
-                <input type="text" id="txtNoKartu" @bind="Volume" readonly />
+                <input type="text" id="txtNoKartu" value="@Volume.ToString("0.000")" readonly />
             </div>
             <div class="input">
                 <label for="txtPin">Harga (Rp)</label>
-                <input type="text" id="txtPin" @bind="Price" readonly  />
+                <input type="text" id="txtPin" value="@Price.ToString("0.000")" readonly />
             </div>
             <div class="input">
                 <label for="txtLog">Logs</label>
@@ -99,12 +102,22 @@
         if (IsFlowing) Close();
         //insert to db
         if (Volume > 0) {
-            WaterUsage usage = new WaterUsage() { UserId = AppState.CurrentUser.Id, TotalHarga = Price, Tanggal = DateTime.Now, Volume = Volume, WaterDepotId = AppConstants.WaterDepotId };
+
+            // get only 3 digit data
+            double.TryParse(Volume.ToString("0.000"), out var digitVolum);
+            double.TryParse(Price.ToString("0.000"), out var digitPrice);
+
+            WaterUsage usage = new WaterUsage() { UserId = AppState.CurrentUser.Id, TotalHarga = digitPrice, Tanggal = DateTime.Now, Volume = digitVolum, WaterDepotId = AppConstants.WaterDepotId };
             var res = UsageSvc.InsertData(usage);
             if (res) {
                 AppState.CurrentUser = null;
             }
         }
+
+        // make sure the process is finish
+        Close();
+        ResetDevice();
+        
         NavMgr.NavigateTo("/");
 
 
@@ -121,14 +134,20 @@
                 OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
                 if (res != null)
                 {
-                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
+                    var dataStr = JsonSerializer.Serialize(x.Data); 
+                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(dataStr) ? res.Message : res.Data)}");
                     switch (res.Message)
                     {
                         case "FLOWING":
-                            var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
-                            if (msg != null)
+                            var waterUsege = new WaterUsage()
                             {
-                                Volume = msg.Volume;
+                                Volume = res.Data.Flow
+                            };
+
+                            //var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
+                            if (waterUsege != null)
+                            {
+                                Volume = waterUsege.Volume;
                                 Price = (CurrentPrice.PricePerLiter / 1000) * Volume;
                             }
 
