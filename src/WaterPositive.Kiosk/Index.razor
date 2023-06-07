@@ -8,13 +8,13 @@
 <MudButton @onclick="Setup" Variant="Variant.Filled" Color="Color.Primary">Get Data From IoT Hub</MudButton>
 <MudGrid>
     <MudItem xs="12">
-        <MudChart ChartType="ChartType.Line" ChartSeries="@TempSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+        <MudChart ChartType="ChartType.Line" ChartSeries="@TdsSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
     </MudItem>
     <MudItem xs="12">
-        <MudChart ChartType="ChartType.Line" ChartSeries="@LightSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+        <MudChart ChartType="ChartType.Line" ChartSeries="@TorenSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
     </MudItem>
     <MudItem xs="12">
-        <MudChart ChartType="ChartType.Line" ChartSeries="@PressureSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+        <MudChart ChartType="ChartType.Line" ChartSeries="@PhSeries" @bind-SelectedIndex="idx" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
     </MudItem>
 </MudGrid>
 
@@ -23,20 +23,20 @@
     string LabelBtn = "Start Simulation";
     int idx = -1;
     bool IsRunning = false;
-    public List<WaterPositive.Kiosk.Data.SensorDataTemp> TimeSeriesData { get; set; } = new();
-    public List<ChartSeries> TempSeries = new List<ChartSeries>()
+    public List<WaterPositive.Kiosk.Data.WaterSensorData> TimeSeriesData { get; set; } = new();
+    public List<ChartSeries> TdsSeries = new List<ChartSeries>()
 {
-        new ChartSeries() { Name = "Temp", Data = new double[] { } },
+        new ChartSeries() { Name = "TDS", Data = new double[] { } },
 
     };
-    public List<ChartSeries> LightSeries = new List<ChartSeries>()
+    public List<ChartSeries> TorenSeries = new List<ChartSeries>()
 {
-        new ChartSeries() { Name = "Light", Data = new double[] { } },
+        new ChartSeries() { Name = "Toren", Data = new double[] { } },
 
     };
-    public List<ChartSeries> PressureSeries = new List<ChartSeries>()
+    public List<ChartSeries> PhSeries = new List<ChartSeries>()
 {
-        new ChartSeries() { Name = "Pressure", Data = new double[] { } },
+        new ChartSeries() { Name = "Ph", Data = new double[] { } },
 
     };
     public string[] XAxisLabels = { };
@@ -49,7 +49,7 @@
 
     async void ReceiveMessage(object sender, MessageReceiveArgs msg)
     {
-        var obj = JsonSerializer.Deserialize<WaterPositive.Kiosk.Data.SensorDataTemp>(msg.Message);
+        var obj = JsonSerializer.Deserialize<WaterPositive.Kiosk.Data.WaterSensorData>(msg.Message);
         if (obj != null)
         {
             TimeSeriesData.Add(obj);
@@ -87,12 +87,12 @@
             IsRunning = true;
         }
 
-       
+
         TimeSeriesData.Clear();
         while (IsRunning)
         {
-            var newItem = new WaterPositive.Kiosk.Data.SensorDataTemp() { TimeStamp = DateTime.Now, Light = random.Next(10, 300), Pressure = random.Next(10, 100), Temp = random.Next(28, 38) };
-            TimeSeriesData.Add(newItem);
+            var newItem = new WaterPositive.Kiosk.Data.WaterSensorData() { TimeStamp= DateTime.Now, Message = "FLOWING", Result = true, Data = new DataSensor() { Ph = random.Next(1, 7), Tds = random.Next(150, 1000), Toren = random.Next(1, 30), Flow = random.Next(1, 100) } };
+        TimeSeriesData.Add(newItem);
             await RefreshChart();
             await Task.Delay(1000);
         }
@@ -100,9 +100,9 @@
 
     async Task RefreshChart()
     {
-        TempSeries[0].Data = TimeSeriesData.Select(x => x.Temp).TakeLast(DataPoints).ToArray();
-        PressureSeries[0].Data = TimeSeriesData.Select(x => x.Pressure).TakeLast(DataPoints).ToArray();
-        LightSeries[0].Data = TimeSeriesData.Select(x => x.Light).TakeLast(DataPoints).ToArray();
+        TdsSeries[0].Data = TimeSeriesData.Select(x => x.Data.Tds).TakeLast(DataPoints).ToArray();
+        PhSeries[0].Data = TimeSeriesData.Select(x => x.Data.Ph).TakeLast(DataPoints).ToArray();
+        TorenSeries[0].Data = TimeSeriesData.Select(x => x.Data.Toren).TakeLast(DataPoints).ToArray();
         XAxisLabels = TimeSeriesData.Select(x => x.TimeStamp.ToString("HH:mm:ss")).TakeLast(DataPoints).ToArray();
         await InvokeAsync(StateHasChanged);
       

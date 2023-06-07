@@ -26,7 +26,7 @@ namespace WaterPositive.Kiosk.Data
                 //users
                 {
                     //sync if needed
-                    var remote_data = Remote.UserProfiles.ToList();
+                    var remote_data = Remote.UserProfiles.AsNoTracking().ToList();
                     var local_data = Local.UserProfiles.ToList();
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterUsages");
                     foreach (var item in remote_data)
@@ -56,7 +56,7 @@ namespace WaterPositive.Kiosk.Data
                 //water depots
                 {
                     //sync if needed
-                    var remote_data = Remote.WaterDepots.ToList();
+                    var remote_data = Remote.WaterDepots.AsNoTracking().ToList();
                     var local_data = Local.WaterDepots.ToList();
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterDepots");
                     foreach (var item in remote_data)
@@ -85,7 +85,7 @@ namespace WaterPositive.Kiosk.Data
                 //water price
                 {
                     //sync if needed
-                    var remote_data = Remote.WaterPrices.ToList();
+                    var remote_data = Remote.WaterPrices.AsNoTracking().ToList();
                     var local_data = Local.WaterPrices.ToList();
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterPrices");
                     foreach (var item in remote_data)
@@ -115,7 +115,7 @@ namespace WaterPositive.Kiosk.Data
                 //CCTV
                 {
                     //sync if needed
-                    var remote_data = Remote.CCTVs.ToList();
+                    var remote_data = Remote.CCTVs.AsNoTracking().ToList();
                     var local_data = Local.CCTVs.ToList();
                     //Local.Database.ExecuteSqlRaw("DELETE FROM CCTVs");
                     foreach (var item in remote_data)
@@ -151,7 +151,19 @@ namespace WaterPositive.Kiosk.Data
                     foreach (var item in local_data)
                     {
                         item.SyncDate = DateTime.Now;
-                        Remote.WaterUsages.Add(item);
+                        var newItem = new Models.WaterUsage()
+                        {
+                            SyncDate = item.SyncDate,
+                            Tanggal = item.Tanggal,
+                            TotalHarga = item.TotalHarga,
+                            UpdatedDate = item.UpdatedDate,
+                           
+                            UserId = item.UserId,
+                            Volume = item.Volume,
+                            
+                            WaterDepotId = item.WaterDepotId
+                        };
+                        Remote.WaterUsages.Add(newItem);
                     }
                     Remote.SaveChanges();
                     Local.SaveChanges();

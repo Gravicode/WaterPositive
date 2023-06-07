@@ -127,6 +127,10 @@
 
     async Task Submit()
     {
+        if (AppConstants.NeedMaintenance)
+        {
+            MessageBox.Show("Maaf device mengalami kendala, hubungi petugas. Perlu prosedur reset.","Terjadi Problem");
+        }
         var res = CheckPin(PIN);
         if (res.Any())
         {

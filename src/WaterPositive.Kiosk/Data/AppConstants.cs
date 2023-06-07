@@ -21,7 +21,7 @@ namespace WaterPositive.Kiosk.Data
         public const string AppName = "WaterPositive.Web DAK";
         public const string FACE_SUBSCRIPTION_KEY = "a068e60df8254cc5a187e3e8c644f316";
         public const string FACE_ENDPOINT = "https://southeastasia.api.cognitive.microsoft.com/";
-
+        public static bool NeedMaintenance { get; set; } = false;
 
         public static string BEARER_TOKEN_EDESK = "";
         

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,8 @@ namespace WaterPositive.Kiosk.Data
         {
             try
             {
-                uart = new SerialPort(ComPort, 115200, Parity.None, 8, StopBits.One);
+                //115200
+                uart = new SerialPort(ComPort, 9600, Parity.None, 8, StopBits.One);
                 uart.DataReceived += Uart_DataReceived;
 
                 // if dealing with massive data input, increase the buffer size
@@ -77,11 +79,19 @@ namespace WaterPositive.Kiosk.Data
 
         void Uart_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            SerialPort sp = (SerialPort)sender;
-            string dataStr = sp.ReadLine();
-            Console.WriteLine("Data Received:");
-            Console.Write(dataStr);
-            DataReceived?.Invoke(this, new DataReceivedEventArgs() { Data = dataStr });
+            try
+            {
+                SerialPort sp = (SerialPort)sender;
+                string dataStr = sp.ReadLine();
+                Console.WriteLine("Data Received:");
+                Console.Write(dataStr);
+                DataReceived?.Invoke(this, new DataReceivedEventArgs() { Data = dataStr });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+          
 
         }
     }

@@ -33,7 +33,12 @@ namespace WaterPositive.Kiosk
             blazorWebView1.Services = services.BuildServiceProvider();
             blazorWebView1.RootComponents.Add<App>("#app");
             Setup();
-            sync.SyncData();
+            DataPrepare();
+        }
+
+        async void DataPrepare()
+        {
+            await sync.SyncData();
         }
 
         void Setup()

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace WaterPositive.Kiosk.Data
 {
@@ -52,9 +53,9 @@ namespace WaterPositive.Kiosk.Data
                 db.SaveChanges();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
-
+                Debug.WriteLine(ex);
             }
             return false;
 

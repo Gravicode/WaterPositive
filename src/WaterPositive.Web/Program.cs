@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using ServiceStack.Redis;
 using WaterPositive.Models;
-using WaterPositive.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

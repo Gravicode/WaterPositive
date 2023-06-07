@@ -21,19 +21,19 @@
     </div>
     <div class="message">
         <div class="userblock">
-            <div class="user">Hai @AppState.CurrentUser.FullName</div>
+            <div class="user">Hai @AppState.CurrentUser?.FullName</div>
             <div class="date">@CurrentTime.ToString("dd MMM yyyy HH:mm:ss")</div>
         </div>
     </div>
     <div class="content">
         <form action="">
             <div class="input">
-                <label for="txtNoKartu" >Liter (L)</label>
+                <label for="txtNoKartu">Liter (L)</label>
                 <input type="text" id="txtNoKartu" @bind="Volume" readonly />
             </div>
             <div class="input">
                 <label for="txtPin">Harga (Rp)</label>
-                <input type="text" id="txtPin" @bind="Price" readonly  />
+                <input type="text" id="txtPin" @bind="Price" readonly />
             </div>
             <div class="input">
                 <label for="txtLog">Logs</label>
@@ -54,6 +54,7 @@
 </div>
 
 @code {
+    long ErrorCount = 0;
     DateTime CurrentTime = DateTime.Now;
     BlazorTimer timer;
     WaterPrice CurrentPrice;
@@ -96,12 +97,14 @@
     }
     async Task End()
     {
-        if (IsFlowing) Close();
+        if (IsFlowing)await Close();
         //insert to db
-        if (Volume > 0) {
+        if (Volume > 0)
+        {
             WaterUsage usage = new WaterUsage() { UserId = AppState.CurrentUser.Id, TotalHarga = Price, Tanggal = DateTime.Now, Volume = Volume, WaterDepotId = AppConstants.WaterDepotId };
             var res = UsageSvc.InsertData(usage);
-            if (res) {
+            if (res)
+            {
                 AppState.CurrentUser = null;
             }
         }
@@ -109,26 +112,26 @@
 
 
     }
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-
         CurrentPrice = PriceSvc.GetCurrent();
 
         device.DataReceived += async (s, x) =>
         {
             try
             {
-                OutputCls res = JsonSerializer.Deserialize<OutputCls>(x.Data);
+                WaterSensorData? res = JsonSerializer.Deserialize<WaterSensorData>(x.Data);
                 if (res != null)
                 {
-                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(string.IsNullOrEmpty(res.Data) ? res.Message : res.Data)}");
+                    messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(res.Data==null ? res.Message : res.Data)}");
                     switch (res.Message)
                     {
                         case "FLOWING":
-                            var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
-                            if (msg != null)
+                            //var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
+                            //var msg = JsonSerializer.Deserialize<DataSensor>(res.Data);
+                            if (res.Data != null)
                             {
-                                Volume = msg.Volume;
+                                Volume = res.Data.Flow;
                                 Price = (CurrentPrice.PricePerLiter / 1000) * Volume;
                             }
 
@@ -139,10 +142,17 @@
             }
             catch (Exception ex)
             {
+                ErrorCount++;
+                if (ErrorCount > 3)
+                {
+                    if (IsFlowing) await Close();
+                    AppConstants.NeedMaintenance = true;
+                    MessageBox.Show("Terjadi masalah pada alat, hubungi petugas, dan lakukan prosedur reset.", "Warning");
+                }
                 Console.WriteLine(ex);
             }
         };
-        ResetDevice();
+        await ResetDevice();
         timer = new();
         timer.SetTimer(1000);
         timer.OnElapsed += async () =>
@@ -150,6 +160,10 @@
             CurrentTime = DateTime.Now;
             await InvokeAsync(StateHasChanged);
         };
+    }
+    protected override void OnInitialized()
+    {
+
     }
     async Task SendCommand()
     {
