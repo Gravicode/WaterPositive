@@ -107,6 +107,13 @@ namespace WaterPositive.Web.Data
             var exists = db.UserProfiles.Any(x => x.Username.ToLower() == Email.ToLower());
             return exists;
         }
+        public bool IsUIDExists(string UID)
+        {
+            if (string.IsNullOrEmpty(UID)) return true;
+            //if (db.UserProfiles.Count() <= 0 ) return false;
+            var exists = db.UserProfiles.Any(x => x.UID == UID);
+            return exists;
+        }
         public bool InsertData(UserProfile data)
         {
             try

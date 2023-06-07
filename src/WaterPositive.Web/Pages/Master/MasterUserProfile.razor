@@ -56,9 +56,9 @@ else
             <MudTd DataLabel="Actions">
                 @if (HasLogin)
                 {
-                    <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForEdit(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Ubah</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForDelete(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Error" Class="mr-2">Hapus</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" @onclick="(async() => await Cetak(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Success" Class="mr-2">Cetak Kartu</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForEdit(item))" DisableElevation="true" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" Class="mr-2">Ubah</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForDelete(item))" DisableElevation="true" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error" Class="mr-2">Hapus</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" @onclick="(async() => await Cetak(item))" DisableElevation="true" Variant="Variant.Filled" Size="Size.Small" Color="Color.Success" Class="mr-2">Kartu</MudButton>
                 }
             </MudTd>
         </RowTemplate>

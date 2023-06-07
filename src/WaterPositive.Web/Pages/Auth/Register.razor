@@ -5,6 +5,7 @@
 @page "/auth/register"
 @inject ISnackbar Snackbar
 @inject IToastService toastService
+@inject UserProfileService service
 @if (RegisterSuccess)
 {
     <MudPaper Class="pa-4 mud-height-full">
@@ -150,8 +151,11 @@ else
         DataUser.Email = DataUser.Username;
         DataUser.Role = Roles.User;
         DataUser.Password = enc.Encrypt(DataUser.Password);
-        DataUser.UID = Tools.NumberGen.GenerateNumber(6);
-
+        var exist = true;
+        while (exist) {
+            DataUser.UID = Tools.NumberGen.GenerateNumber(6);
+            exist = service.IsUIDExists(DataUser.UID);
+        }
         if (svc.InsertData(DataUser))
         {
             var msg = "Anda telah terdaftar di Water Positive, semoga bermanfaat. Terima Kasih";
