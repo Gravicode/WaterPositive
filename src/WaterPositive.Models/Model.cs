@@ -104,6 +104,11 @@ namespace WaterPositive.Models
 
     }
     [ServiceContract]
+    public interface IWaterTankData : ICrudGrpc<WaterTankData>
+    {
+
+    }
+    [ServiceContract]
     public interface IDataCounter : ICrudGrpc<DataCounter>
     {
 
@@ -214,6 +219,27 @@ namespace WaterPositive.Models
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         [DataMember(Order = 9)]
         public DateTime SyncDate { get; set; } = DateTime.MinValue;
+    }
+
+    [DataContract]
+    public class WaterTankData
+    {
+        [DataMember(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, Column(Order = 0)]
+        public long Id { get; set; }
+
+        [DataMember(Order = 2)]
+        public string? Nama { get; set; }
+
+        [DataMember(Order = 3)]
+        public DateTime? TanggalUpdate { get; set; }
+
+        [DataMember(Order = 4)]
+        public float FlowIn { get; set; } = 0f;
+
+        [DataMember(Order = 5)]
+        public float FlowOut { get; set; } = 0f;
     }
 
     [DataContract]

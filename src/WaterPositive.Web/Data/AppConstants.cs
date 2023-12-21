@@ -7,6 +7,8 @@ namespace WaterPositive.Web.Data
 {
     public class AppConstants
     {
+        public static string APIKEY = "123qweasd";
+
         public static long MaxAllowedFileSize = 500 * 1024000;
         public static string StorageEndpoint = "";
         public static string StorageAccess = "";

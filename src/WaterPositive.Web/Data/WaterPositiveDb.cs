@@ -26,6 +26,7 @@ namespace WaterPositive.Web.Data
         public DbSet<DataCounter> DataCounters { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<SensorData> SensorDatas { get; set; }
+        public DbSet<WaterTankData> WaterTankDatas { get; set; }
       
         protected override void OnModelCreating(ModelBuilder builder)
         {

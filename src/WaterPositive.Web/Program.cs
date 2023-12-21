@@ -11,6 +11,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using ServiceStack.Redis;
 using WaterPositive.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -26,9 +31,11 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.CheckConsentNeeded = context => true;
     options.MinimumSameSitePolicy = SameSiteMode.None;
 });
+/*
 builder.Services.AddAuthentication(
     CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+*/
 // BLAZOR COOKIE Auth Code (end)
 // ******
 // ******
@@ -53,7 +60,9 @@ builder.Services.AddTransient<SensorDataService>();
 builder.Services.AddTransient<WaterUsageService>();
 builder.Services.AddTransient<UserProfileService>();
 builder.Services.AddTransient<WaterPriceService>();
+builder.Services.AddTransient<WaterTankDataService>();
 builder.Services.AddTransient<ReportService>();
+builder.Services.AddTransient<IRestApiService,RestApiService>();
 
 builder.Services.AddCors(options =>
 {
@@ -97,10 +106,11 @@ var setting = new StorageSetting() { };
 setting.Bucket = AppConstants.StorageBucket;
 setting.SecretKey = AppConstants.StorageSecret;
 setting.AccessKey = AppConstants.StorageAccess;
-
 builder.Services.AddSingleton(setting);
 builder.Services.AddTransient<StorageObjectService>();
 builder.Services.AddSingleton(new RedisManagerPool(AppConstants.RedisCon));
+
+builder.Services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -112,6 +122,97 @@ builder.Services.AddSignalR(hubOptions =>
     hubOptions.MaximumReceiveMessageSize = 128 * 1024; // 1MB
 });
 
+
+builder.Services.AddControllers();
+
+#region Rest API
+var securityScheme = new OpenApiSecurityScheme()
+{
+    Name = "Authorization",
+    Type = SecuritySchemeType.ApiKey,
+    Scheme = "Bearer",
+    BearerFormat = "JWT",
+    In = ParameterLocation.Header,
+    Description = "JSON Web Token based security",
+};
+
+var securityReq = new OpenApiSecurityRequirement()
+{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        new string[] {}
+    }
+};
+
+var contact = new OpenApiContact()
+{
+    Name = "Water Positive Team",
+    Email = "waterpositive@alkademi.com",
+    Url = new Uri("https://alkademi.com")
+};
+
+var license = new OpenApiLicense()
+{
+    Name = "Water Positive API License",
+    Url = new Uri("https://alkademi.com/license.html")
+};
+
+var info = new OpenApiInfo()
+{
+    Version = "v1",
+    Title = "Water Positive Data API v1.0",
+    Description = "API for accessing Water Positive data",
+    TermsOfService = new Uri("https://alkademi.com/terms.html"),
+    Contact = contact,
+    License = license
+};
+
+// Add JWT configuration (support multi auth scheme, jwt and cookie)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/auth/login";
+        options.AccessDeniedPath = "/auth/forbidden";
+    })
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey
+                (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = true
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        CookieAuthenticationDefaults.AuthenticationScheme, JwtBearerDefaults.AuthenticationScheme);
+    defaultAuthorizationPolicyBuilder =
+        defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+    options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", info);
+    o.AddSecurityDefinition("Bearer", securityScheme);
+    o.AddSecurityRequirement(securityReq);
+});
+
+#endregion
 
 var app = builder.Build();
 
@@ -132,6 +233,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
+//swagger
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Water Positive Data API V1");
+});
+//end swagger
 
 app.UseStaticFiles();
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ServiceStack.Redis;
 using WaterPositive.Models;
 using WaterPositive.Web.Data;
 
@@ -10,35 +9,12 @@ namespace WaterPositive.Web.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class WaterUsageController : ControllerBase
+    public class UserProfileController : ControllerBase
     {
-        RedisManagerPool pool;
-        WaterUsageService service;
-        public WaterUsageController(WaterUsageService service, RedisManagerPool manager)
+        UserProfileService service;
+        public UserProfileController(UserProfileService service)
         {
-            this.pool = manager;
             this.service = service;
-        }
-        // /api/Sms/GetData
-        [AllowAnonymous]
-        [HttpPost("[action]")]
-        public IActionResult SyncData(List<WaterUsage> items)
-        {
-            try
-            {
-                foreach (var item in items)
-                {
-                    item.Id = 0; //so it will be treat as new object
-
-                }
-                var res = service.InsertDatas(items);
-                return Ok();
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
         [HttpDelete("DeleteData")]
         public IActionResult DeleteData(int id)
@@ -72,13 +48,13 @@ namespace WaterPositive.Web.Controllers
             return Ok(datas);
         }
         [HttpPost("InsertData")]
-        public IActionResult InsertData([FromForm] WaterUsage data)
+        public IActionResult InsertData([FromForm] UserProfile data)
         {
             var datas = service.InsertData(data);
             return Ok(datas);
         }
         [HttpPut("UpdateData")]
-        public IActionResult UpdateData([FromForm] WaterUsage data)
+        public IActionResult UpdateData([FromForm] UserProfile data)
         {
             var respon = service.UpdateData(data);
             if (respon == true)
