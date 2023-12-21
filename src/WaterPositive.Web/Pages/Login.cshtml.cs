@@ -33,7 +33,7 @@ namespace WaterPositive.Web.Pages
             catch { }
             bool isAuthenticate = false;
             var usr = db.UserProfiles.Where(x => x.Username == paramUsername).FirstOrDefault();
-            if(usr != null)
+            if (usr != null)
             {
                 var enc = new Encryption();
                 var pass = enc.Decrypt(usr.Password);
@@ -56,7 +56,7 @@ namespace WaterPositive.Web.Pages
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = true,
-                    RedirectUri = this.Request.Host.Value
+                    RedirectUri = Request.Host.Value
                 };
                 try
                 {
