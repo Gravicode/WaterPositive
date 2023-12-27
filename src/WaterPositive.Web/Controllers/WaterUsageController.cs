@@ -62,7 +62,7 @@ namespace WaterPositive.Web.Controllers
         [HttpGet("GetAllData")]
         public IActionResult GetAllData()
         {
-            var datas = service.GetAllData();
+            var datas = service.GetAllDataNoInclude();
             return Ok(datas);
         }
         [HttpGet("GetDataById")]

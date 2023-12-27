@@ -37,6 +37,10 @@ namespace WaterPositive.Web.Data
         {
             return db.WaterUsages.Include(c=>c.User).Include(c=>c.WaterDepot).ToList();
         }
+        public List<WaterUsage> GetAllDataNoInclude()
+        {
+            return db.WaterUsages.ToList();
+        }
 
         public WaterUsage GetDataById(object Id)
         {
