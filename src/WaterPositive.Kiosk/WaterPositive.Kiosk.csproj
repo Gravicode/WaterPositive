@@ -40,8 +40,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\WaterPositive.Models\WaterPositive.Models.csproj" />
-	  <ProjectReference Include="..\WaterPositive.Tools\WaterPositive.Tools.csproj" />
+	  <ProjectReference Include="..\WaterPositive.Models\WaterPositive.Models.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
+	  <ProjectReference Include="..\WaterPositive.Tools\WaterPositive.Tools.csproj">
+	    <ReferenceSourceTarget></ReferenceSourceTarget>
+	  </ProjectReference>
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="GemBox.Document">

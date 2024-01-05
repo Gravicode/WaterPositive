@@ -30,9 +30,12 @@ namespace WaterPositive.Web.Data
 
         public List<WaterTankData> GetAllData()
         {
-            return db.WaterTankDatas.ToList();
+            return db.WaterTankDatas.Take(1000).ToList();
         }
-
+        public List<WaterTankData> GetLastData(int Count)
+        {
+            return db.WaterTankDatas.OrderByDescending(x=>x.Id).Take(Count).ToList();
+        }
         public WaterTankData GetDataById(object Id)
         {
             return db.WaterTankDatas.Where(x => x.Id == (long)Id).FirstOrDefault();

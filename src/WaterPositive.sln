@@ -25,6 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterPositive.Kiosk", "Wate
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterPositive.Web", "WaterPositive.Web\WaterPositive.Web.csproj", "{991002DF-4597-4B08-B3CF-45525E6C0553}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hub", "Hub", "{EE7D16A9-D369-413D-8568-F983061C918C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterPositive.StreamHub", "WaterPositive.StreamHub\WaterPositive.StreamHub.csproj", "{65F0ADCC-548D-4EEA-95DD-18A546993D37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,10 @@ Global
 		{991002DF-4597-4B08-B3CF-45525E6C0553}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{991002DF-4597-4B08-B3CF-45525E6C0553}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{991002DF-4597-4B08-B3CF-45525E6C0553}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65F0ADCC-548D-4EEA-95DD-18A546993D37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65F0ADCC-548D-4EEA-95DD-18A546993D37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65F0ADCC-548D-4EEA-95DD-18A546993D37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65F0ADCC-548D-4EEA-95DD-18A546993D37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +81,7 @@ Global
 		{13481660-7E5F-4863-9DA7-AEDC05D0D687} = {00AD5F0F-44F5-4AF8-B0FA-2E921000F106}
 		{880AA740-2C20-4C03-87B7-C212AA019488} = {9AF0C71D-5C12-4DD3-8FE8-A07857DB1B2A}
 		{991002DF-4597-4B08-B3CF-45525E6C0553} = {BE32F4AE-A9C7-4C06-A7A9-E5D2E5D9A08E}
+		{65F0ADCC-548D-4EEA-95DD-18A546993D37} = {EE7D16A9-D369-413D-8568-F983061C918C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EA7D4BC-D472-403A-957B-999AB7376F57}
