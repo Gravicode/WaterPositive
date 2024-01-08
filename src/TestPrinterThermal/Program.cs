@@ -12,8 +12,8 @@ namespace TestPrinterThermal
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            //RunThermalDotNet();
-            Print();
+            RunThermalDotNet();
+            //Print();
             //var pos = new PosPrinter();
             //pos.TestPrint();
             Console.ReadLine();

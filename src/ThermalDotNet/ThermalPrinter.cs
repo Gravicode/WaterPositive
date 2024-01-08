@@ -81,8 +81,10 @@ namespace ThermalDotNet
 		}
 		
 		private void _constructor(SerialPort serialPort, byte maxPrintingDots, byte heatingTime, byte heatingInterval)
-		{
-			this.Encoding = "UTF-8"; //"ibm850";
+        {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            this.Encoding = "ibm850";
 			
 			_maxPrintingDots = maxPrintingDots;
 			_heatingTime = heatingTime;
