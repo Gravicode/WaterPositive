@@ -27,13 +27,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterPositive.Web", "WaterP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hub", "Hub", "{EE7D16A9-D369-413D-8568-F983061C918C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaterPositive.StreamHub", "WaterPositive.StreamHub\WaterPositive.StreamHub.csproj", "{65F0ADCC-548D-4EEA-95DD-18A546993D37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterPositive.StreamHub", "WaterPositive.StreamHub\WaterPositive.StreamHub.csproj", "{65F0ADCC-548D-4EEA-95DD-18A546993D37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPrinterThermal", "TestPrinterThermal\TestPrinterThermal.csproj", "{EA545544-CB27-43C3-8DF3-42009904FB46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestPrinterThermal", "TestPrinterThermal\TestPrinterThermal.csproj", "{EA545544-CB27-43C3-8DF3-42009904FB46}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{3F9A5AF0-AC82-43EE-B79C-1DDBF758D15B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThermalDotNet", "ThermalDotNet\ThermalDotNet.csproj", "{5342CC1C-F4D3-4305-BA01-FAF6CC98028D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermalDotNet", "ThermalDotNet\ThermalDotNet.csproj", "{5342CC1C-F4D3-4305-BA01-FAF6CC98028D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRScannerSerial", "QRScannerSerial\QRScannerSerial.csproj", "{7A549165-4709-4F2F-886D-B33369E91FD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,10 @@ Global
 		{5342CC1C-F4D3-4305-BA01-FAF6CC98028D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5342CC1C-F4D3-4305-BA01-FAF6CC98028D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5342CC1C-F4D3-4305-BA01-FAF6CC98028D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A549165-4709-4F2F-886D-B33369E91FD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A549165-4709-4F2F-886D-B33369E91FD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A549165-4709-4F2F-886D-B33369E91FD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A549165-4709-4F2F-886D-B33369E91FD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +104,7 @@ Global
 		{65F0ADCC-548D-4EEA-95DD-18A546993D37} = {EE7D16A9-D369-413D-8568-F983061C918C}
 		{EA545544-CB27-43C3-8DF3-42009904FB46} = {6F96A67A-C3C3-42EA-986B-C38F29FD11C8}
 		{5342CC1C-F4D3-4305-BA01-FAF6CC98028D} = {3F9A5AF0-AC82-43EE-B79C-1DDBF758D15B}
+		{7A549165-4709-4F2F-886D-B33369E91FD0} = {3F9A5AF0-AC82-43EE-B79C-1DDBF758D15B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EA7D4BC-D472-403A-957B-999AB7376F57}

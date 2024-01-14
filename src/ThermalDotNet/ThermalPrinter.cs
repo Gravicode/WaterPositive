@@ -84,9 +84,10 @@ namespace ThermalDotNet
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-            this.Encoding = "ibm850";
-			
-			_maxPrintingDots = maxPrintingDots;
+			this.Encoding = "ibm850";
+
+
+            _maxPrintingDots = maxPrintingDots;
 			_heatingTime = heatingTime;
 			_heatingInterval = heatingInterval;
 

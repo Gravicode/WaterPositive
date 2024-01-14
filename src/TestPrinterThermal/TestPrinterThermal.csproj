@@ -13,11 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\QRScannerSerial\QRScannerSerial.csproj" />
     <ProjectReference Include="..\ThermalDotNet\ThermalDotNet.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="pd-logo-300.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="pd-logo-384.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

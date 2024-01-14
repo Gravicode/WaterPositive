@@ -1,6 +1,7 @@
 ﻿using ESCPOS_NET;
 using ESCPOS_NET.Emitters;
 using ESCPOS_NET.Utilities;
+using QRScannerSerial;
 using System.Drawing;
 using System.IO.Ports;
 using ThermalDotNet;
@@ -12,8 +13,13 @@ namespace TestPrinterThermal
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            RunThermalDotNet();
-            //Print();
+            QRScanner scanner = new QRScanner();
+            scanner.QRDataReceived += (a, b) => {
+                Console.WriteLine("READ: "+b.QRCode);
+            };
+            scanner.Start();
+            //RunThermalDotNet();
+            Print();
             //var pos = new PosPrinter();
             //pos.TestPrint();
             Console.ReadLine();
@@ -158,7 +164,7 @@ namespace TestPrinterThermal
         static void TestImage(ThermalPrinter printer)
         {
             printer.WriteLine("Test image:");
-            Bitmap img = new Bitmap("../../../mono-logo.png");
+            Bitmap img = new Bitmap("pd-logo-384.png");
             printer.LineFeed();
             printer.PrintImage(img);
             printer.LineFeed();
@@ -194,20 +200,22 @@ namespace TestPrinterThermal
             }
 
             //Printer init
-            ThermalPrinter printer = new ThermalPrinter(printerPort, 2, 180, 2);
+            ThermalPrinter printer = new ThermalPrinter(printerPort);//, 7, 80, 2);
+            printer.Reset();
             printer.WakeUp();
+            printer.BoldOn();
             Console.WriteLine(printer.ToString());
 
-            //TestReceipt(printer);
+            TestReceipt(printer);
 
-            //System.Threading.Thread.Sleep(5000);
-            //printer.SetBarcodeLeftSpace(25);
-            //TestBarcode(printer);
+            System.Threading.Thread.Sleep(5000);
+            printer.SetBarcodeLeftSpace(25);
+            TestBarcode(printer);
 
-            //System.Threading.Thread.Sleep(5000);
-            //TestImage(printer);
+            System.Threading.Thread.Sleep(5000);
+            TestImage(printer);
 
-            //System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(5000);
 
             printer.WriteLineSleepTimeMs = 200;
             printer.WriteLine("Default style");
