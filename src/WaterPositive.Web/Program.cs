@@ -58,6 +58,7 @@ namespace WaterPositive.Web
             builder.Services.AddTransient<WaterPriceService>();
             builder.Services.AddTransient<WaterTankDataService>();
             builder.Services.AddTransient<ReportService>();
+            builder.Services.AddTransient<UsageLimitService>();
             builder.Services.AddTransient<IRestApiService, RestApiService>();
 
             builder.Services.AddCors(options =>

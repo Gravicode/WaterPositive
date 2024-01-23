@@ -168,6 +168,34 @@ namespace WaterPositive.Kiosk.Data
                     Remote.SaveChanges();
                     Local.SaveChanges();
                 }
+                //UsageLimits
+                {
+                    //sync if needed
+                    var remote_data = Remote.UsageLimits.AsNoTracking().ToList();
+                    var local_data = Local.UsageLimits.ToList();
+                    //Local.Database.ExecuteSqlRaw("DELETE FROM WaterDepots");
+                    foreach (var item in remote_data)
+                    {
+                        var exist = local_data.FirstOrDefault(x => x.Id == item.Id);
+                        if (exist == null)
+                        {
+                            item.SyncDate = DateTime.Now;
+                            Local.UsageLimits.Add(item);
+                        }
+                        else if (exist.SyncDate < item.UpdatedDate)
+                        {
+                            exist.SyncDate = DateTime.Now;
+                            exist.UpdatedDate = item.UpdatedDate;
+
+                            exist.LimitLiterHarian = item.LimitLiterHarian;
+                            exist.TanggalAkhir = item.TanggalAkhir;
+                            exist.TanggalAwal = item.TanggalAwal;
+                            exist.Keterangan = item.Keterangan;
+
+                        }
+                    }
+                    Local.SaveChanges();
+                }
             }
             catch (Exception ex)
             {

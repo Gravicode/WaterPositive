@@ -1,3 +1,4 @@
+using Blazored.Toast;
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
@@ -15,6 +16,7 @@ namespace WaterPositive.Kiosk
             
             InitializeComponent();
             var services = new ServiceCollection();
+            services.AddBlazoredToast();
             services.AddMudServices();
             services.AddSingleton<HubProcessorService>();
             services.AddSingleton<UserProfileService>();
@@ -23,11 +25,13 @@ namespace WaterPositive.Kiosk
             services.AddTransient<DataCounterService>();
             services.AddTransient<SensorDataService>();
             services.AddTransient<WaterUsageService>();
+            services.AddTransient<UsageLimitService>();
             services.AddTransient<UserProfileService>();
             services.AddTransient<WaterPriceService>();
             services.AddSingleton<AppState>();
             services.AddTransient<SerialDevice>();
-
+            services.AddTransient<PrinterService>();
+           
             services.AddWindowsFormsBlazorWebView();
             blazorWebView1.HostPage = "wwwroot\\index.html";
             blazorWebView1.Services = services.BuildServiceProvider();

@@ -24,6 +24,7 @@ namespace WaterPositive.Kiosk
             AppConstants.SQLConn = ConfigurationManager.AppSettings["SQLConn"];
             AppConstants.SQLCloud = ConfigurationManager.AppSettings["SQLCloud"];
             AppConstants.ComPort = ConfigurationManager.AppSettings["ComPort"];
+            AppConstants.PrinterPort = ConfigurationManager.AppSettings["PrinterPort"];
             var db = new WaterPositiveDB(true);
             db.Database.EnsureCreated();
         

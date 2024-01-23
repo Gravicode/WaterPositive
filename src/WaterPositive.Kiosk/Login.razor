@@ -57,7 +57,7 @@
 @if (ShowScanBarcode)
 {
     <BarcodeReader ScanResult="((e) => { UID =e; ShowScanBarcode = !ShowScanBarcode; })"
-               ShowScanBarcode="ShowScanBarcode"
+               
                Close="(()=>ShowScanBarcode=!ShowScanBarcode)"
                ScanBtnTitle="Scan"
                ResetBtnTitle="Reset"

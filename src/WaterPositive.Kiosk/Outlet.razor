@@ -3,8 +3,12 @@
 @inject NavigationManager NavMgr
 @inject WaterPriceService PriceSvc
 @inject WaterUsageService UsageSvc
+@inject WaterDepotService DepotSvc
+@inject UsageLimitService LimitSvc
 @inject AppState AppState
 @inject SerialDevice device
+@inject PrinterService printerSvc
+@inject IToastService toastService
 @implements IDisposable
 
 <div class="container">
@@ -58,13 +62,16 @@
     DateTime CurrentTime = DateTime.Now;
     BlazorTimer timer;
     WaterPrice CurrentPrice;
+    WaterDepot CurrentDepot;
+    UsageLimit CurrentLimit;
+    double prevVol = 0;
     double Volume = 0;
     double Price = 0;
     bool IsFlowing = false;
     string CommandStr = string.Empty;
     bool success;
     List<string> messages = new();
-
+    bool OverLimit = false;
     async Task Reset()
     {
         messages.Clear();
@@ -83,6 +90,7 @@
     }
     async Task Open()
     {
+        if (OverLimit) return;
         if (IsFlowing) return;
         CommandStr = "OPEN";
         await SendCommand();
@@ -95,6 +103,20 @@
         IsFlowing = false;
         await SendCommand();
     }
+
+    async Task<bool> CheckLimit()
+    {
+        var totalVol = Volume + prevVol;
+        if (totalVol >= CurrentLimit.LimitLiterHarian)
+        {
+            if(IsFlowing)
+                await Close();
+            toastService.ShowError($"Anda sudah melampaui limit penggunaan air harian yaitu {CurrentLimit?.LimitLiterHarian} liter");
+            return true;
+        }
+        return false;
+    }
+
     async Task End()
     {
         if (IsFlowing)await Close();
@@ -103,6 +125,11 @@
         {
             WaterUsage usage = new WaterUsage() { UserId = AppState.CurrentUser.Id, TotalHarga = Price, Tanggal = DateTime.Now, Volume = Volume, WaterDepotId = AppConstants.WaterDepotId };
             var res = UsageSvc.InsertData(usage);
+            //add more info to receipt
+            if (CurrentDepot != null) usage.WaterDepot = CurrentDepot;
+            if (AppState.CurrentUser != null) usage.User = AppState.CurrentUser;
+            //print receipt
+            printerSvc.CetakReceipt(usage);
             if (res)
             {
                 AppState.CurrentUser = null;
@@ -115,7 +142,12 @@
     protected override async Task OnInitializedAsync()
     {
         CurrentPrice = PriceSvc.GetCurrent();
-
+        CurrentDepot = DepotSvc.GetDataById(AppConstants.WaterDepotId);
+        CurrentLimit = LimitSvc.GetCurrentLimit();
+        //get previous water usage
+        prevVol = UsageSvc.GetTodayUsage(AppState.CurrentUser.Id);
+        //check limit
+        OverLimit = await CheckLimit();
         device.DataReceived += async (s, x) =>
         {
             try
@@ -133,6 +165,7 @@
                             {
                                 Volume = res.Data.Flow;
                                 Price = (CurrentPrice.PricePerLiter / 1000) * Volume;
+                                OverLimit = await CheckLimit();
                             }
 
                             break;

@@ -446,5 +446,32 @@ namespace WaterPositive.Models
         public DateTime SyncDate { get; set; } = DateTime.MinValue;
 
     }
+
+    [DataContract]
+    public class UsageLimit
+    {
+        [DataMember(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, Column(Order = 0)]
+        public long Id { get; set; }
+        [DataMember(Order = 2)]
+        public string Keterangan { get; set; }
+        [DataMember(Order = 3)]
+        public DateTime? TanggalAwal { get; set; } = DateTime.Today;
+        [DataMember(Order = 4)]
+        public DateTime? TanggalAkhir { get; set; } = DateTime.Today.AddMonths(12);
+
+        [DataMember(Order = 5)]
+        public float LimitLiterHarian { get; set; } = 50;
+
+        [DataMember(Order = 6)]
+        public string UpdatedBy { get; set; }
+
+        [DataMember(Order = 7)]
+        public DateTime? UpdatedDate { get; set; }
+        [DataMember(Order = 8)]
+        public DateTime SyncDate { get; set; } = DateTime.MinValue;
+
+    }
     #endregion
 }

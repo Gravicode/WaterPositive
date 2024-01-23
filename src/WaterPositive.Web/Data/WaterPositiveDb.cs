@@ -19,6 +19,7 @@ namespace WaterPositive.Web.Data
             : base(options)
         {
         }
+        public DbSet<UsageLimit> UsageLimits { get; set; }
         public DbSet<WaterPrice> WaterPrices { get; set; }
         public DbSet<WaterUsage> WaterUsages { get; set; }
         public DbSet<CCTV> CCTVs { get; set; }

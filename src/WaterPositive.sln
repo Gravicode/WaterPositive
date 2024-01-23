@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{3F9A5AF0-A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThermalDotNet", "ThermalDotNet\ThermalDotNet.csproj", "{5342CC1C-F4D3-4305-BA01-FAF6CC98028D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRScannerSerial", "QRScannerSerial\QRScannerSerial.csproj", "{7A549165-4709-4F2F-886D-B33369E91FD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRScannerSerial", "QRScannerSerial\QRScannerSerial.csproj", "{7A549165-4709-4F2F-886D-B33369E91FD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

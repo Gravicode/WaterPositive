@@ -38,6 +38,14 @@ namespace WaterPositive.Kiosk.Data
         {
             return db.WaterUsages.Include(c=>c.User).Include(c=>c.WaterDepot).ToList();
         }
+        
+        public double GetTodayUsage(long UserId)
+        {
+            var now = DateTime.Now;
+            var items = db.WaterUsages.Where(x => x.UserId == UserId && x.UpdatedDate.Day == now.Day && x.UpdatedDate.Month == now.Month && x.UpdatedDate.Year == now.Year  ).ToList();
+            var total = items == null ? 0 : items.Sum(x => x.Volume);
+            return total;
+        }
 
         public WaterUsage GetDataById(object Id)
         {
