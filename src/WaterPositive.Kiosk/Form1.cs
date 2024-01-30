@@ -11,6 +11,7 @@ namespace WaterPositive.Kiosk
         System.Timers.Timer SyncTimer;
         bool IsSync = false;
         SyncHelper sync;
+        XbeeReceiverService xbeeReceiverService;
         public Form1()
         {
             
@@ -59,6 +60,7 @@ namespace WaterPositive.Kiosk
                 IsSync = false;
             };
             SyncTimer.Start();
+            this.xbeeReceiverService = new(new SensorDataService());
         }
     }
 }

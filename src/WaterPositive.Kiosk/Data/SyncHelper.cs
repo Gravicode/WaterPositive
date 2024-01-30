@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Web.WebView2.Core;
+using WaterPositive.Models;
 
 namespace WaterPositive.Kiosk.Data
 {
@@ -195,6 +196,30 @@ namespace WaterPositive.Kiosk.Data
                         }
                     }
                     Local.SaveChanges();
+                }
+                //sensor data
+                {
+                    //push only
+                    var local_data = Local.SensorDatas.Where(x=>x.SyncDate<=DateTime.MinValue).ToList();
+                    //Local.Database.ExecuteSqlRaw("DELETE FROM WaterDepots");
+                    foreach (var item in local_data)
+                    {
+                        var newItem = new SensorData();
+                        newItem.DO = item.DO;
+                        newItem.Tds = item.Tds;
+                        newItem.Temperature = item.Temperature;
+                        newItem.WaterLevel = item.WaterLevel;
+                        newItem.Tanggal = item.Tanggal;
+                        newItem.Pressure = item.Pressure;
+                        newItem.DeviceId = item.DeviceId;
+                        newItem.WaterDepotId = item.WaterDepotId;
+                        item.SyncDate = DateTime.Now;
+                        newItem.SyncDate = item.SyncDate;
+                        newItem.UpdatedDate = item.UpdatedDate;
+                        Remote.SensorDatas.Add(newItem);
+                    }
+                    Local.SaveChanges();
+                    Remote.SaveChanges();
                 }
             }
             catch (Exception ex)

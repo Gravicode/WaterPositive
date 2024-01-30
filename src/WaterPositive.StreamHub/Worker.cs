@@ -31,7 +31,7 @@ public class Worker : BackgroundService
                     item.Name = fields.Where(x => x.Key.Contains("Device")).FirstOrDefault().Value;
 
                     var res = await syncSvc.SendData(item);
-                    Console.WriteLine($"inserted to db: {res}");
+                    Console.WriteLine($"[{item.TimeStamp}] - inserted to db: {res}");
                 }
                 //"Date/Time :5-1-2024 10:41:6 | Device:AWS001 | Flow In:58696.12 | Flow Out:13224.24"
             }

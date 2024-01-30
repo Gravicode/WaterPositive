@@ -1,7 +1,8 @@
 using WaterPositive.Kiosk.Data;
 using WaterPositive.Models;
 using System;
-public class XbeeReceiverService
+using Newtonsoft.Json;
+public class XbeeReceiverService:IDisposable
     {
         SerialDevice serial;
         SensorDataService service {set;get;}
@@ -15,28 +16,31 @@ public class XbeeReceiverService
         {
             try
             {
-                WaterSensorData? res = JsonSerializer.Deserialize<WaterSensorData>(x.Data);
+                WaterSensorTowerData? res = JsonConvert.DeserializeObject<WaterSensorTowerData>(x.Data);
                 if (res != null)
                 {
                     //messages.Add($"[{DateTime.Now}] => ({res.Result}) : {(res.Data==null ? res.Message : res.Data)}");
                     switch (res.Message)
                     {
-                        case "FLOWING":
+                        case "AIRMONITORING":
                             //var msg = JsonSerializer.Deserialize<WaterUsage>(res.Data);
                             //var msg = JsonSerializer.Deserialize<DataSensor>(res.Data);
-                            
+
 
                             break;
                     }
                     if (res.Data != null)
-                            {
-                              var newItem = new SensorData();
-                              newItem.Data = res.Data;
-                              newItem.Result = res.Result;
-                              newItem.TimeStamp = res.TimeStamp;
-                              var hasil = this.service.InsertData(newItem);
-                              System.Console.WriteLine("insert data: "+hasil);
-                            }
+                    {
+                        var newItem = new SensorData();
+                        newItem.WaterDepotId = AppConstants.WaterDepotId;
+                        newItem.Tanggal = DateTime.Now;
+                        newItem.Tds = res.Data.Tds;
+                        newItem.WaterLevel = res.Data.Cm;
+                        newItem.Ph = res.Data.Ph;
+                        newItem.DeviceId = "WaterSensor001";
+                        var hasil = this.service.InsertData(newItem);
+                        System.Console.WriteLine("insert data: " + hasil);
+                    }
                 }
             }
             catch (Exception ex)
@@ -48,8 +52,13 @@ public class XbeeReceiverService
                     //AppConstants.NeedMaintenance = true;
                     //MessageBox.Show("Terjadi masalah pada alat, hubungi petugas, dan lakukan prosedur reset.", "Warning");
                 }
-                Console.WriteLine("read sensor failed: "+ex);
+                Console.WriteLine("read sensor failed: " + ex);
             }
         };
        }
+
+    public void Dispose()
+    {
+        this.serial.Dispose();
     }
+}

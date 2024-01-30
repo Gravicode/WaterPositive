@@ -20,28 +20,36 @@ namespace WaterPositive.StreamHub.Helpers
         }
         public async Task<bool> SendData(SensorData item)
 		{
-			var ts =  DateTime.Now - LastGetToken;
-            if (ts.TotalMinutes >= IntervalMin)
+			try
 			{
-				var token = await GetToken();
-				if(!string.IsNullOrEmpty(token))
-					SetToken(token);
-				CurrentToken = token;
-			}
-			if (string.IsNullOrEmpty(CurrentToken)) return false;
-			Dictionary<string, string> data = new();
-			data.Add("Id", "0");
-            data.Add("Nama", item.Name);
-            data.Add("TanggalUpdate", item.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss") ?? DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
-            data.Add("FlowIn", item.FlowIn.ToString("n2"));
-            data.Add("FlowOut", item.FlowOut.ToString("n2"));
+                var ts = DateTime.Now - LastGetToken;
+                if (ts.TotalMinutes >= IntervalMin)
+                {
+                    var token = await GetToken();
+                    if (!string.IsNullOrEmpty(token))
+                        SetToken(token);
+                    CurrentToken = token;
+                }
+                if (string.IsNullOrEmpty(CurrentToken)) return false;
+                Dictionary<string, string> data = new();
+                data.Add("Id", "0");
+                data.Add("Nama", item.Name);
+                data.Add("TanggalUpdate", item.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss") ?? DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
+                data.Add("FlowIn", item.FlowIn.ToString("n2"));
+                data.Add("FlowOut", item.FlowOut.ToString("n2"));
 
-            using HttpContent formContent = new FormUrlEncodedContent(data);
-            using HttpResponseMessage response = await client.PostAsync(UrlInsertData, formContent).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            var res = await response.Content.ReadAsStringAsync();
-		    bool.TryParse(res, out var resVal);
-			return resVal;
+                using HttpContent formContent = new FormUrlEncodedContent(data);
+                using HttpResponseMessage response = await client.PostAsync(UrlInsertData, formContent).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                var res = await response.Content.ReadAsStringAsync();
+                bool.TryParse(res, out var resVal);
+                return resVal;
+            }
+			catch (Exception)
+			{
+                return false;
+			}
+			
         }
 
         void SetToken(string Token)

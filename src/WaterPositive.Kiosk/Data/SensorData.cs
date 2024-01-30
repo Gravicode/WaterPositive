@@ -9,6 +9,16 @@ namespace WaterPositive.Kiosk.Data
     //    public double Pressure { get; set; }
     //    public DateTime TimeStamp { get; set; }
     //}
+    public class DataSensorTower
+    {
+        public double Cm { get; set; }
+        public double Ph { get; set; }
+        public double Tds { get; set; }
+        public override string ToString()
+        {
+            return $"torren:{Cm} tds:{Tds} ph:{Ph}";
+        }
+    }
 
     public class DataSensor
     {
@@ -29,7 +39,13 @@ namespace WaterPositive.Kiosk.Data
         public bool Result { get; set; }
         public DataSensor Data { get; set; }
     }
-
+    public class WaterSensorTowerData
+    {
+        public DateTime TimeStamp { get; set; }
+        public string Message { get; set; }
+        public bool Result { get; set; }
+        public DataSensorTower Data { get; set; }
+    }
 
 }
 
