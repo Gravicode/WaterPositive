@@ -156,7 +156,7 @@
         PIN += e.Key;
         /*
         if (e.Key == "Enter")
-        {
+    {
     Submit();
     }
     */
@@ -182,10 +182,11 @@
     List<string> errors = new();
     MudForm form;
     string UID, PIN;
-    private IEnumerable<string> CheckPin(string pin)
+    async Task <IEnumerable<string>> CheckPin(string pin)
     {
+        var errorMessages = new List<string>();
         if (string.IsNullOrEmpty(UID))
-            yield return "Silakan Masukan No Kartu";
+            errorMessages.Add( "Silakan Masukan No Kartu");
         var res = UserSvc.GetDataByUID(UID);
         if (res != null)
         {
@@ -193,20 +194,20 @@
                 if (string.IsNullOrEmpty(pin))
                 {
                     //IJS.InvokeVoidAsync("SetFocus", "txtPin");
-                    CurrentMode = InputModes.Pin;
-                    yield return "Silakan Input PIN.";
+                    await ChangeMode(InputModes.Pin);
+                    errorMessages.Add( "Silakan Input PIN.");
                 }
                 else
                 if (res.PIN != pin)
                 {
-                    yield return "PIN Salah, Silakan Ulang Kembali.";
+                    errorMessages.Add( "PIN Salah, Silakan Ulang Kembali.");
                 }
         }
         else
         {
-            yield return "No Kartu Salah, Silakan Ulang Kembali.";
+            errorMessages.Add( "No Kartu Salah, Silakan Ulang Kembali.");
         }
-
+        return errorMessages;
     }
 
     async Task Submit()
@@ -218,7 +219,7 @@
             errors.Clear();
             errors.Add(Pesan);
         }
-        var res = CheckPin(PIN);
+        var res = await CheckPin(PIN);
         if (res.Any())
         {
             errors.Clear();
