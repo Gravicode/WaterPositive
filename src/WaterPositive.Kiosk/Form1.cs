@@ -76,6 +76,55 @@ namespace WaterPositive.Kiosk
             };
             SyncTimer.Start();
             this.xbeeReceiverService = new(new SensorDataService());
+            //capture keyboard
+            //Set up scanner key handling
+            this.KeyPreview = true;
+            this.KeyDown += new KeyEventHandler(KeyDownHandler);
+        }
+
+        private string outputString;
+        public KeysConverter keysConverter = new KeysConverter();
+        private void KeyDownHandler(object sender, KeyEventArgs e)
+        {
+            //When return is pressed send string and start over
+            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+            {
+                ScannerInputHandler(outputString);
+                outputString = string.Empty;
+                System.Windows.Forms.Application.DoEvents();
+            }
+            //Ignore these keycodes
+            else if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.J || e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.CapsLock)
+            {
+
+            }
+            //Add to string
+            else
+            {
+                string character = keysConverter.ConvertToString(e.KeyCode);
+                outputString += character;
+            }
+        }
+        private void ScannerInputHandler(string inputString)
+        {
+            
+            if (inputString == "123")
+            {
+                MessageBox.Show("oke");
+            }
+           
+
+            //Search for a number
+            if (IsNumeric(inputString) == true)
+            {
+                //FindSelectedPartUsingTONumber(inputString);
+            }
+        }
+
+        public static bool IsNumeric(string input)
+        {
+            int number;
+            return int.TryParse(input, out number);
         }
     }
 }
