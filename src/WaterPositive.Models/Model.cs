@@ -326,18 +326,20 @@ namespace WaterPositive.Models
         public double Pressure { get; set; }
         [DataMember(Order = 8)]
         public double WaterLevel { get; set; }
-
         [DataMember(Order = 9)]
-        public string DeviceId { get; set; }
+        public double Altitude { get; set; }
 
         [DataMember(Order = 10)]
+        public string DeviceId { get; set; }
+
+        [DataMember(Order = 11)]
         [ForeignKey(nameof(WaterDepot))]
         public long WaterDepotId { get; set; }
-        [DataMember(Order = 11)]
-        public WaterDepot WaterDepot { get; set; }
         [DataMember(Order = 12)]
-        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        public WaterDepot WaterDepot { get; set; }
         [DataMember(Order = 13)]
+        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [DataMember(Order = 14)]
         public DateTime SyncDate { get; set; } = DateTime.MinValue;
 
 

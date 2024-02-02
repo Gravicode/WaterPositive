@@ -211,6 +211,7 @@ namespace WaterPositive.Kiosk.Data
                         newItem.WaterLevel = item.WaterLevel;
                         newItem.Tanggal = item.Tanggal;
                         newItem.Pressure = item.Pressure;
+                        newItem.Altitude = item.Altitude;
                         newItem.DeviceId = item.DeviceId;
                         newItem.WaterDepotId = item.WaterDepotId;
                         item.SyncDate = DateTime.Now;

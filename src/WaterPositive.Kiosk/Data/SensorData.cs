@@ -14,9 +14,12 @@ namespace WaterPositive.Kiosk.Data
         public double Cm { get; set; }
         public double Ph { get; set; }
         public double Tds { get; set; }
+        public double Temperature { get; set; }
+        public double Pressure { get; set; }
+        public double Altitude { get; set; }
         public override string ToString()
         {
-            return $"torren:{Cm} tds:{Tds} ph:{Ph}";
+            return $"torren:{Cm.ToString("n1")} tds:{Tds.ToString("n1")} ph:{Ph.ToString("n1")} temp:{Temperature.ToString("n1")} pres:{Pressure.ToString("n1")} alt:{Altitude.ToString("n1")}";
         }
     }
 

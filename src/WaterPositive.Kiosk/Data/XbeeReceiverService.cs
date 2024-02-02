@@ -37,6 +37,9 @@ public class XbeeReceiverService:IDisposable
                         newItem.Tds = res.Data.Tds;
                         newItem.WaterLevel = res.Data.Cm;
                         newItem.Ph = res.Data.Ph;
+                        newItem.Temperature = res.Data.Temperature;
+                        newItem.Altitude = res.Data.Altitude;
+                        newItem.Pressure = res.Data.Pressure;
                         newItem.DeviceId = "WaterSensor001";
                         var hasil = this.service.InsertData(newItem);
                         System.Console.WriteLine("insert data: " + hasil);
