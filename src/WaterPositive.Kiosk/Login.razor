@@ -28,7 +28,7 @@
             <form action="">
                 <div class="input">
                     <label for="txtNoKartu">No Kartu</label>
-                    <div class="text @TxtKartuClass" @onclick="()=>ChangeMode(InputModes.Kartu)" id="txtNoKartu">@UID</div>
+                    <div class="text @TxtKartuClass" @onkeydown="KeyDown" @ref="myDiv" @onclick="()=>ChangeMode(InputModes.Kartu)" id="txtNoKartu">@UID</div>
                     <input type="hidden" @bind="UID" id="txtNoKartu_hidden" name="txtNoKartu_hidden">
                 </div>
                 <div class="input">
@@ -86,7 +86,7 @@
     string PIN_MASK = "";
     enum InputModes {Kartu,Pin}
     InputModes CurrentMode = InputModes.Kartu;
-
+    protected ElementReference myDiv;  // set by the @ref attribute
     async Task Delete()
     {
         switch (CurrentMode)
@@ -145,15 +145,20 @@
         PIN = string.Empty;
         PIN_MASK = string.Empty;
         UID = string.Empty;
-        CurrentMode = InputModes.Kartu;
+        await ChangeMode(InputModes.Kartu);
         if (!AppConstants.NeedMaintenance)
             errors.Clear();
         //await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
     }
+    protected void KeyDown(KeyboardEventArgs e)
+    {
+        PIN += e.Key;
+        //letter = $"Pressed: [{e.Key}]";
+    }
     async Task KeyUp(KeyboardEventArgs e)
     {
 
-        PIN += e.Key;
+
         /*
         if (e.Key == "Enter")
     {
@@ -165,7 +170,8 @@
     {
         if (firstRender)
         {
-            CurrentMode = InputModes.Kartu;
+            await ChangeMode(InputModes.Kartu);
+            await IJS.InvokeVoidAsync("SetFocusToElement", myDiv);
             //await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
 
         }
@@ -185,8 +191,10 @@
     async Task <IEnumerable<string>> CheckPin(string pin)
     {
         var errorMessages = new List<string>();
-        if (string.IsNullOrEmpty(UID))
+        if (string.IsNullOrEmpty(UID)){
             errorMessages.Add( "Silakan Masukan No Kartu");
+            return errorMessages;
+        }
         var res = UserSvc.GetDataByUID(UID);
         if (res != null)
         {
