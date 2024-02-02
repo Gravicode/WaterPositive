@@ -13,15 +13,15 @@ namespace TestPrinterThermal
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            QRScanner scanner = new QRScanner();
-            scanner.QRDataReceived += (a, b) => {
-                Console.WriteLine("READ: "+b.QRCode);
-            };
-            scanner.Start();
+            //QRScanner scanner = new QRScanner();
+            //scanner.QRDataReceived += (a, b) => {
+            //    Console.WriteLine("READ: "+b.QRCode);
+            //};
+            //scanner.Start();
             //RunThermalDotNet();
-            Print();
-            //var pos = new PosPrinter();
-            //pos.TestPrint();
+            //Print();
+            var pos = new PosPrinter();
+            pos.TestPrint();
             Console.ReadLine();
         }
 

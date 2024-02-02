@@ -1,5 +1,6 @@
 ﻿@page "/outlet"
 @using System.Text.Json;
+@using System.Collections.Concurrent
 @inject NavigationManager NavMgr
 @inject WaterPriceService PriceSvc
 @inject WaterUsageService UsageSvc
@@ -7,7 +8,7 @@
 @inject UsageLimitService LimitSvc
 @inject AppState AppState
 @inject SerialDevice device
-@inject PrinterService printerSvc
+@inject PosPrinterService printerSvc
 @inject IToastService toastService
 @implements IDisposable
 
@@ -42,10 +43,10 @@
             <div class="input">
                 <label for="txtLog">Logs</label>
                 <ul class="div-scroll">
-                    @foreach (var message in messages)
+                   @*  @foreach (var message in messages)
                     {
                         <li>@message</li>
-                    }
+                    } *@
                 </ul>
             </div>
         </form>
@@ -205,6 +206,5 @@
         {
             CommandStr = string.Empty;
         }
-
     }
 }

@@ -3,23 +3,33 @@ using ESC_POS_USB_NET.Printer;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ThermalDotNet;
+using WaterPositive.Models;
 
-namespace TestPrinterThermal
+namespace WaterPositive.Kiosk.Data
 {
-    public class PosPrinter
+    public class PosPrinterService
     {
-        public PosPrinter()
+        Printer printer { set; get; }
+        public PosPrinterService()
         {
-            
+            Setup();
+        }
+
+        void Setup()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            printer = new Printer(AppConstants.PrinterName);
         }
 
         public void TestPrint()
         {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            Printer printer = new Printer("WP-80C");
+            Printer printer = new Printer(AppConstants.AppName);
             printer.TestPrinter();
             printer.FullPaperCut();
             printer.PrintDocument();
@@ -28,7 +38,7 @@ namespace TestPrinterThermal
         void PrintImage()
         {
             Printer printer = new Printer("Printer Name");
-            Bitmap image = new Bitmap(Bitmap.FromFile("Icon.bmp"));
+            Bitmap image = new Bitmap(Image.FromFile("Icon.bmp"));
             printer.Image(image);
             printer.FullPaperCut();
             printer.PrintDocument();
@@ -48,7 +58,67 @@ namespace TestPrinterThermal
             printer.FullPaperCut();
             printer.PrintDocument();
         }
+        public void CetakReceipt(WaterUsage usage)
+        {
+            try
+            {
+                var ci = new CultureInfo("id-ID");
+                Dictionary<string, double> ItemList = new Dictionary<string, double>(100);
+                printer.SetLineHeight(0);
+                printer.AlignCenter();
+                printer.UnderlineMode("AWS WATER POSITIVE");
+                printer.Append("-- Tanda Terima Pemakaian Air --");
+                printer.Append($"Depot: {usage.WaterDepot?.Nama}");
+                printer.Append($"Tanggal/Waktu: {usage.UpdatedDate.ToString("dddd, dd-MMM-yyyy HH:mm",ci)}");
+                printer.Append($"Nama: {usage.User?.FullName} - {usage.User?.KTP}");
+                printer.Separator();
 
+                ItemList.Add("Volume (Liter)", usage.Volume);
+                ItemList.Add("Harga (Rp)", usage.TotalHarga);
+
+                //int total = 0;
+                foreach (KeyValuePair<string, double> item in ItemList)
+                {
+                    CashRegister(item.Key, item.Value);
+                    //total += item.Value;
+                }
+
+                printer.Separator();
+
+                //double dTotal = Convert.ToDouble(total) / 100;
+                //double VAT = 10.0;
+
+                //printer.Append(string.Format("{0:0.00}", usage.TotalHarga).PadLeft(32));
+
+                //printer.WriteLine("VAT 10,0%" + String.Format("{0:0.00}", (dTotal * VAT / 100)).PadLeft(23));
+
+                //printer.WriteLine(String.Format("$ {0:0.00}", dTotal * VAT / 100 + dTotal).PadLeft(16),
+                //    ThermalPrinter.PrintingStyle.DoubleWidth);
+
+                //printer.LineFeed();
+                //printer.WriteLine("CASH" + String.Format("{0:0.00}", (double)total / 100).PadLeft(28));
+                printer.NewLine();
+                printer.NewLine();
+                printer.AlignCenter();
+                printer.BoldMode("Terima kasih, gunakan air dengan hemat.");
+                printer.NewLine();
+                printer.FullPaperCut();
+                printer.PrintDocument();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Printing error: {ex}");
+            }
+
+        }
+
+        void CashRegister(string item, double numValue)
+        {
+            printer.InitializePrint();
+            printer.AlignLeft();
+            printer.Append(item.ToUpper()+" : "+string.Format("{0:0.00}", numValue));
+            printer.NewLine();
+        }
         void TypoGraphyTest()
         {
             Printer printer = new Printer("Printer Name");

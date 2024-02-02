@@ -16,6 +16,8 @@ namespace WaterPositive.Kiosk
         {
             
             InitializeComponent();
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
             var services = new ServiceCollection();
             services.AddBlazoredToast();
             services.AddMudServices();
@@ -31,7 +33,7 @@ namespace WaterPositive.Kiosk
             services.AddTransient<WaterPriceService>();
             services.AddSingleton<AppState>();
             services.AddTransient<SerialDevice>();
-            services.AddTransient<PrinterService>();
+            services.AddTransient<PosPrinterService>();
            
             services.AddWindowsFormsBlazorWebView();
             blazorWebView1.HostPage = "wwwroot\\index.html";
@@ -40,7 +42,20 @@ namespace WaterPositive.Kiosk
             Setup();
             DataPrepare();
         }
-
+        private void GoFullscreen(bool fullscreen)
+        {
+            if (fullscreen)
+            {
+                this.WindowState = FormWindowState.Normal;
+                this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                this.Bounds = Screen.PrimaryScreen.Bounds;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Maximized;
+                this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+            }
+        }
         async void DataPrepare()
         {
             await sync.SyncData();

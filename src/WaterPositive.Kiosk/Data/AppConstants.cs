@@ -7,6 +7,7 @@ namespace WaterPositive.Kiosk.Data
 {
     public class AppConstants
     {
+        public static string PrinterName = "WP-80C";
         public static string XbeePort = "COM5";
         public static string PrinterPort = "COM9";
         public static string ComPort = "COM6";

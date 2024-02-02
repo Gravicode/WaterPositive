@@ -21,6 +21,7 @@ namespace WaterPositive.Kiosk
 
         static void Setup()
         {
+            AppConstants.PrinterName = ConfigurationManager.AppSettings["PrinterName"];
             AppConstants.SQLConn = ConfigurationManager.AppSettings["SQLConn"];
             AppConstants.SQLCloud = ConfigurationManager.AppSettings["SQLCloud"];
             AppConstants.XbeePort = ConfigurationManager.AppSettings["XbeePort"];
