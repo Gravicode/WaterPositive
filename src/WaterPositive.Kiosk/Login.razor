@@ -8,7 +8,7 @@
 @inject UserProfileService UserSvc
 @inject AppState AppState
 @inject IJSRuntime IJS
-<div class="container">
+<div class="container flex-row">
     <div class="header">
         <div class="logos">
             <a class="logo-water" href="/"><img src="assets/img/water-positif.svg" alt=""></a>
@@ -23,67 +23,151 @@
     <div class="message">
         Silahkan Scan QR dengan kartu Anda atau masukkan No Kartu dan PIN
     </div>
-    <div class="content">
-        <form action="">
-            <div class="input">
-                <label for="txtNoKartu">No Kartu</label>
-                <input type="text" @bind="UID" @onkeyup="KeyUp"  id="txtNoKartu" />
-            </div>
-            <div class="input">
-                <label for="txtPin">PIN</label>
-                <input type="text" @bind="PIN" @onkeyup="KeyUp" id="txtPin" />
-            </div>
-            @if (errors.Count > 0)
-            {
+    <div class="content login-content">
+        <div class="login-form">
+            <form action="">
                 <div class="input">
-                    <label for="txtPin">Error</label>
-                    <ul class="alert alert-warning">
-                        @foreach (var error in errors)
-                        {
-                            <li>@error</li>
-                        }
-                    </ul>               
+                    <label for="txtNoKartu">No Kartu</label>
+                    <div class="text @TxtKartuClass" @onclick="()=>ChangeMode(InputModes.Kartu)" id="txtNoKartu">@UID</div>
+                    <input type="hidden" @bind="UID" id="txtNoKartu_hidden" name="txtNoKartu_hidden">
+                </div>
+                <div class="input">
+                    <label for="txtPin">PIN</label>
+                    <div class="text mask @TxtPinClass" @onclick="()=>ChangeMode(InputModes.Pin)" id="txtPin">@PIN_MASK</div>
+                    <input type="hidden" @bind="PIN" id="txtPin_hidden" name="txtPin_hidden">
+                </div>
+                @if (errors.Count > 0)
+                {
+                    <div class="input">
+                        <ul class="alert">
+                            @foreach (var error in errors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </form>
+            <div class="footer">
+                <button class="green" @onclick="@(()=>Submit())">Masuk</button>
+                <button class="gray" @onclick="@(()=>Reset())">Ulang</button>
+                <button style="display:none;" class="orange" @onclick="ShowScanner">Scan QR</button>
             </div>
-            }
-        </form>
+        </div>
+        <div class="keypad">
+            <div @onclick='()=>InputKey("9")' class="key" data-key="9">9</div>
+            <div @onclick='()=>InputKey("8")' class="key" data-key="8">8</div>
+            <div @onclick='()=>InputKey("7")' class="key" data-key="7">7</div>
+            <div @onclick='()=>InputKey("6")' class="key" data-key="6">6</div>
+            <div @onclick='()=>InputKey("5")' class="key" data-key="5">5</div>
+            <div @onclick='()=>InputKey("4")' class="key" data-key="4">4</div>
+            <div @onclick='()=>InputKey("3")' class="key" data-key="3">3</div>
+            <div @onclick='()=>InputKey("2")' class="key" data-key="2">2</div>
+            <div @onclick='()=>InputKey("1")' class="key" data-key="1">1</div>
+            <div @onclick="Delete" class="key" data-key="D">Del</div>
+            <div @onclick='()=>InputKey("0")' class="key" data-key="0">0</div>
+            <div @onclick="Enter" class="key" data-key="E">Enter</div>
+        </div>
     </div>
-</div>
-<div class="footer">
-    <button class="green" @onclick="@(()=>Submit())">Masuk</button>
-    <button class="gray" @onclick="@(()=>Reset())">Ulang</button>
-    <button style="display:none;" class="orange" @onclick="ShowScanner">Scan QR</button>
-</div>
 
-@if (ShowScanBarcode)
-{
-    <BarcodeReader ScanResult="((e) => { UID =e; ShowScanBarcode = !ShowScanBarcode; })"
-               
-               Close="(()=>ShowScanBarcode=!ShowScanBarcode)"
-               ScanBtnTitle="Scan"
-               ResetBtnTitle="Reset"
-               CloseBtnTitle="Close"
-               SelectDeviceBtnTitle="Select Device" />
-}
+    @if (ShowScanBarcode)
+    {
+        <BarcodeReader ScanResult="((e) => { UID =e; ShowScanBarcode = !ShowScanBarcode; })"
+                       Close="(()=>ShowScanBarcode=!ShowScanBarcode)"
+                       ScanBtnTitle="Scan"
+                       ResetBtnTitle="Reset"
+                       CloseBtnTitle="Close"
+                       SelectDeviceBtnTitle="Select Device" />
+    }
+</div>
 @code {
+    string TxtKartuClass = "active";
+    string TxtPinClass = "";
+    string PIN_MASK = "";
+    enum InputModes {Kartu,Pin}
+    InputModes CurrentMode = InputModes.Kartu;
+
+    async Task Delete()
+    {
+        switch (CurrentMode)
+        {
+            case InputModes.Kartu:
+                UID = string.Empty;
+                break;
+            case InputModes.Pin:
+                PIN = string.Empty;
+                PIN_MASK = string.Empty;
+                break;
+        }
+    }
+
+    async Task Enter()
+    {
+        await Submit();
+    }
+
+    async Task InputKey(string CharInput)
+    {
+        switch (CurrentMode)
+        {
+            case InputModes.Kartu:
+                UID += CharInput;
+                break;
+            case InputModes.Pin:
+                PIN += CharInput;
+                PIN_MASK = "";
+                for (var i= 0; i < PIN.Length; i++)
+                {
+                    PIN_MASK += "*";
+                }
+                break;
+        }
+    }
+
+    async Task ChangeMode(InputModes mode)
+    {
+        CurrentMode = mode;
+        switch (CurrentMode)
+        {
+            case InputModes.Kartu:
+                TxtKartuClass = "active";
+                TxtPinClass = "";
+                break;
+            case InputModes.Pin:
+                TxtKartuClass = "";
+                TxtPinClass = "active";
+                break;
+        }
+    }
+
     async Task Reset()
     {
         PIN = string.Empty;
+        PIN_MASK = string.Empty;
         UID = string.Empty;
-        await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
+        CurrentMode = InputModes.Kartu;
+        if (!AppConstants.NeedMaintenance)
+            errors.Clear();
+        //await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
     }
     async Task KeyUp(KeyboardEventArgs e)
     {
+
+        PIN += e.Key;
+        /*
         if (e.Key == "Enter")
         {
-            Submit();
-        }
+    Submit();
+    }
+    */
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
-            //if (txtUID != null) txtUID.AutoFocus = true;
+            CurrentMode = InputModes.Kartu;
+            //await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
+
         }
     }
     protected override void OnInitialized()
@@ -101,26 +185,26 @@
     private IEnumerable<string> CheckPin(string pin)
     {
         if (string.IsNullOrEmpty(UID))
-            yield return "Input UID first";
+            yield return "Silakan Masukan No Kartu";
         var res = UserSvc.GetDataByUID(UID);
         if (res != null)
         {
             if (!string.IsNullOrEmpty(res.PIN))
                 if (string.IsNullOrEmpty(pin))
                 {
-                    IJS.InvokeVoidAsync("SetFocus", "txtPin");
-                    //txtPIN.FocusAsync();
-                    yield return "please input PIN.";
+                    //IJS.InvokeVoidAsync("SetFocus", "txtPin");
+                    CurrentMode = InputModes.Pin;
+                    yield return "Silakan Input PIN.";
                 }
                 else
                 if (res.PIN != pin)
                 {
-                    yield return "wrong PIN, try again.";
+                    yield return "PIN Salah, Silakan Ulang Kembali.";
                 }
         }
         else
         {
-            yield return "Unknown UID, try again.";
+            yield return "No Kartu Salah, Silakan Ulang Kembali.";
         }
 
     }
@@ -129,7 +213,10 @@
     {
         if (AppConstants.NeedMaintenance)
         {
-            MessageBox.Show("Maaf device mengalami kendala, hubungi petugas. Perlu prosedur reset.","Terjadi Problem");
+            var Pesan = "Terjadi kendala, silakan hubungi petugas. Perlu prosedur reset.";
+            MessageBox.Show(Pesan,"Terjadi Problem");
+            errors.Clear();
+            errors.Add(Pesan);
         }
         var res = CheckPin(PIN);
         if (res.Any())

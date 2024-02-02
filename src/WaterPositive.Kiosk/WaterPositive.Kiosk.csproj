@@ -19,6 +19,7 @@
 		<None Include="Shared\Usercontrols\MudInfoDialog.razor" />
 		<None Include="Shared\Usercontrols\PictureDialog.razor" />
 		<None Include="Shared\Usercontrols\TableTemplate.razor" />
+		<None Include="wwwroot\assets\js\scripts.js" />
 		<None Include="wwwroot\index-mud.html" />
 		<None Include="wwwroot\index.html" />
 	</ItemGroup>

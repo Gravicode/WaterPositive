@@ -40,7 +40,7 @@
                 <label for="txtPin">Harga (Rp)</label>
                 <input type="text" id="txtPin" @bind="Price" readonly />
             </div>
-            <div class="input">
+            <div style="display:none;" class="input">
                 <label for="txtLog">Logs</label>
                 <ul class="div-scroll">
                    @*  @foreach (var message in messages)
@@ -145,6 +145,12 @@
         CurrentPrice = PriceSvc.GetCurrent();
         CurrentDepot = DepotSvc.GetDataById(AppConstants.WaterDepotId);
         CurrentLimit = LimitSvc.GetCurrentLimit();
+        if(CurrentPrice == null || CurrentDepot == null || CurrentLimit == null)
+        {
+            AppConstants.NeedMaintenance = true;
+            toastService.ShowError(AppConstants.MaintenanceMessage);
+            return;
+        }
         //get previous water usage
         prevVol = UsageSvc.GetTodayUsage(AppState.CurrentUser.Id);
         //check limit
@@ -181,7 +187,7 @@
                 {
                     if (IsFlowing) await Close();
                     AppConstants.NeedMaintenance = true;
-                    MessageBox.Show("Terjadi masalah pada alat, hubungi petugas, dan lakukan prosedur reset.", "Warning");
+                    MessageBox.Show(AppConstants.MaintenanceMessage, "Warning");
                 }
                 Console.WriteLine(ex);
             }
@@ -201,10 +207,17 @@
     }
     async Task SendCommand()
     {
-        var res = device.SendMessage(CommandStr.ToUpper());
-        if (res)
+        if (!AppConstants.NeedMaintenance)
         {
-            CommandStr = string.Empty;
+            var res = device.SendMessage(CommandStr.ToUpper());
+            if (res)
+            {
+                CommandStr = string.Empty;
+            }
+        }
+        else
+        {
+            toastService.ShowError(AppConstants.MaintenanceMessage);
         }
     }
 }

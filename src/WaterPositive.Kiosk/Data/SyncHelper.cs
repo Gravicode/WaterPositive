@@ -16,6 +16,8 @@ namespace WaterPositive.Kiosk.Data
        
         public SyncHelper(WaterPositiveDB local, WaterPositiveDB remote)
         {
+            //var db = new WaterPositiveDB(true);            
+            //var db_remote = new WaterPositiveDB(false);
             this.Local = local;
             this.Remote = remote;
         }

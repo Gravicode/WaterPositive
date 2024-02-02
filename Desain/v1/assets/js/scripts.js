@@ -1,4 +1,3 @@
-/*
 var _current_field = null;
 
 function prepareLoginPage(){
@@ -52,8 +51,8 @@ function prepareLoginPage(){
 
     });
 }
-*/
+
 $(function(){
     // init
-    //prepareLoginPage();
+    prepareLoginPage();
 });
