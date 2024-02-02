@@ -31,6 +31,7 @@ else
             <MudTh>Ph</MudTh>
             <MudTh>TDS</MudTh>
             <MudTh>Temperature</MudTh>
+            <MudTh>Altitude</MudTh>
             <MudTh>Device ID</MudTh>
             <MudTh>Depot</MudTh>
             <MudTh>Actions</MudTh>
@@ -43,6 +44,7 @@ else
             <MudTd DataLabel="Ph">@item.Ph</MudTd>
             <MudTd DataLabel="TDS">@item.Tds</MudTd>
             <MudTd DataLabel="Temperature">@item.Temperature</MudTd>
+            <MudTd DataLabel="Altitude">@item.Altitude</MudTd>
             <MudTd DataLabel="Device ID">@item.DeviceId</MudTd>
             <MudTd DataLabel="Depot">@item.WaterDepot.Nama</MudTd>
             <MudTd DataLabel="Actions">
@@ -149,7 +151,7 @@ else
 
         itemObject = new SensorData();
 
-        customHeader = "Masukan SensorData Baru";
+        customHeader = "Masukan Sensor Data Baru";
 
         var action = new Action(DataChanged);
         var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };
@@ -171,7 +173,7 @@ else
 
     private async Task PrepareForEdit(SensorData item)
     {
-        customHeader = "Ubah Data SensorData";
+        customHeader = "Ubah Data Sensor Data";
         itemObject = item;
         var action = new Action(DataChanged);
         var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };
