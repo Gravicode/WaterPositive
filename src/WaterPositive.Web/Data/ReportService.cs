@@ -1,14 +1,12 @@
 ﻿using GemBox.Document;
 using GemBox.Spreadsheet;
-using Microsoft.EntityFrameworkCore;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using WaterPositive.Models;
-using WaterPositive.Tools;
-using WaterPositive.Web.Data;
 using WaterPositive.Web.Helpers;
-using ZXing.QrCode;
+using ZXing.Common;
+using ZXing.SkiaSharp;
+using ZXing;
+using SkiaSharp;
 
 namespace WaterPositive.Web.Data
 {
@@ -196,7 +194,28 @@ namespace WaterPositive.Web.Data
         byte[] GenerateQR(string QRData, int width = 100, int height = 100)
         {
 
+            var qr = new BarcodeWriter
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new EncodingOptions
+                {
+                    Height = width,
+                    Width = height
+                }
+            };
 
+            var FilePath = Path.GetTempPath() + "/" + Guid.NewGuid().ToString().Replace("-", "_") + ".png";
+            using var bitmap = qr.Write(QRData);
+            using var stream = new MemoryStream();
+            bitmap.Encode(stream, SKEncodedImageFormat.Png, 100);
+            //var result = new Bitmap(qr.Write(KodeQR));
+            var qrCodeImage = qr.Write(QRData); // BOOM!!
+            var bytes = stream.ToArray();
+            //File.WriteAllBytes(FilePath, bytes);
+            //var temp = File.ReadAllBytes(FilePath);
+            string base64String = Convert.ToBase64String(bytes, 0, bytes.Length);
+            var QRImage = "data:image/png;base64," + base64String;
+            /*
             var qr = new ZXing.BarcodeWriter();
             var options = new QrCodeEncodingOptions
             {
@@ -214,7 +233,10 @@ namespace WaterPositive.Web.Data
             result.Save(FilePath, ImageFormat.Jpeg);
 
             var temp = File.ReadAllBytes(FilePath);
+            
             return temp;
+            */
+            return bytes;
             //string base64String = Convert.ToBase64String(temp, 0, temp.Length);
             //QRImage = "data:image/png;base64," + base64String;
         }

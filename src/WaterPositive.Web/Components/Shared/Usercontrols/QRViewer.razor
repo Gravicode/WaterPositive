@@ -8,9 +8,12 @@
 @using Microsoft.EntityFrameworkCore
 @using System.IO
 @using Microsoft.AspNetCore.WebUtilities
-@using ZXing.QrCode
+@using SkiaSharp;
+@using ZXing.Common;
+@using ZXing.SkiaSharp;
 @using System.Drawing
 @using System.Drawing.Imaging
+@using ZXing;
 
 <div class="row mt-2">
     <div class="col-lg">
@@ -83,6 +86,7 @@
         {
             QRData = param1;
             KodeQR = param1;//QRData.Replace(AppConstants.CheckQRUrl,string.Empty);
+            /*
             var qr = new ZXing.BarcodeWriter();
             var options = new QrCodeEncodingOptions
             {
@@ -101,6 +105,28 @@
 
             var temp = File.ReadAllBytes(FilePath);
             string base64String = Convert.ToBase64String(temp, 0, temp.Length);
+            QRImage = "data:image/png;base64," + base64String;
+            */
+            var qr = new BarcodeWriter
+                {
+                    Format = BarcodeFormat.QR_CODE,
+                    Options = new EncodingOptions
+                    {
+                        Height = 200,
+                        Width = 200
+                    }
+                };
+           
+            var FilePath = Path.GetTempPath() + "/" + Guid.NewGuid().ToString().Replace("-", "_") + ".png";
+            using var bitmap = qr.Write(QRData);
+            using var stream = new MemoryStream();
+            bitmap.Encode(stream, SKEncodedImageFormat.Png, 100);
+            //var result = new Bitmap(qr.Write(KodeQR));
+            var qrCodeImage = qr.Write(QRData); // BOOM!!
+            var bytes = stream.ToArray();
+            //File.WriteAllBytes(FilePath, bytes);
+            //var temp = File.ReadAllBytes(FilePath);
+            string base64String = Convert.ToBase64String(bytes, 0, bytes.Length);
             QRImage = "data:image/png;base64," + base64String;
             //ImageQR.ImageUrl = "/handlers/imageloader.ashx?ImgPath=" + FilePath;
 

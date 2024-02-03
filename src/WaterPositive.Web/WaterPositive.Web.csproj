@@ -38,7 +38,8 @@
 		<PackageReference Include="System.Data.Common" Version="4.3.0" />
 		<PackageReference Include="System.IO.Packaging" Version="4.7.0" />
 		<PackageReference Include="System.Net.Http.Formatting.Extension" Version="5.2.3" />
-		<PackageReference Include="ZXing.Net" Version="0.16.6" />
+		<PackageReference Include="ZXing.Net" Version="0.16.9" />
+		<PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.13" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\IDCH.Storage\IDCH.Storage.csproj" />
