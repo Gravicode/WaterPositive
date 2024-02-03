@@ -107,7 +107,7 @@
 
     async Task Enter()
     {
-       
+
         await Submit();
     }
 
@@ -234,6 +234,13 @@
 
     async Task Submit()
     {
+        if(UID == AppConstants.SecretCode)
+        {
+            errors.Clear();
+            errors.Add( "restart machine for maintenance..");
+            Shutdown.Restart();
+            return;
+        }
         if (AppConstants.NeedMaintenance)
         {
             var Pesan = "Terjadi kendala, silakan hubungi petugas. Perlu prosedur reset.";
