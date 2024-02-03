@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using WaterPositive.Kiosk.Data;
+using WaterPositive.Kiosk.Helpers;
 
 namespace WaterPositive.Kiosk
 {
@@ -12,12 +13,17 @@ namespace WaterPositive.Kiosk
         bool IsSync = false;
         SyncHelper sync;
         XbeeReceiverService xbeeReceiverService;
+        
         public Form1()
         {
             
             InitializeComponent();
+
+            //full screen and top most
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
+            //TopMost = true;
+
             var services = new ServiceCollection();
             services.AddBlazoredToast();
             services.AddMudServices();
@@ -34,6 +40,7 @@ namespace WaterPositive.Kiosk
             services.AddSingleton<AppState>();
             services.AddTransient<SerialDevice>();
             services.AddTransient<PosPrinterService>();
+            services.AddTransient<BarcodeInterceptor>();
            
             services.AddWindowsFormsBlazorWebView();
             blazorWebView1.HostPage = "wwwroot\\index.html";
@@ -76,15 +83,24 @@ namespace WaterPositive.Kiosk
             };
             SyncTimer.Start();
             this.xbeeReceiverService = new(new SensorDataService());
+            
             //capture keyboard
             //Set up scanner key handling
-            this.KeyPreview = true;
-            this.KeyDown += new KeyEventHandler(KeyDownHandler);
+            //this.KeyPreview = true;
+            //this.KeyDown += new KeyEventHandler(KeyDownHandler);
+            //this.KeyPress += Form1_KeyPress;
+            
+        }
+        #region keyboard press / barcode handler
+        private void Form1_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            Console.WriteLine(e.KeyChar);
+            //throw new NotImplementedException();
         }
 
         private string outputString;
         public KeysConverter keysConverter = new KeysConverter();
-        private void KeyDownHandler(object sender, KeyEventArgs e)
+        private void KeyDownHandler(object? sender, KeyEventArgs e)
         {
             //When return is pressed send string and start over
             if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
@@ -126,5 +142,7 @@ namespace WaterPositive.Kiosk
             int number;
             return int.TryParse(input, out number);
         }
+
+        #endregion
     }
 }

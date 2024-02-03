@@ -8,6 +8,8 @@
 @inject UserProfileService UserSvc
 @inject AppState AppState
 @inject IJSRuntime IJS
+@inject BarcodeInterceptor barcodeScanner
+@implements IDisposable
 <div class="container flex-row">
     <div class="header">
         <div class="logos">
@@ -178,6 +180,13 @@
     }
     protected override void OnInitialized()
     {
+        barcodeScanner.SetHook();
+        barcodeScanner.BarcodeScanned += async (object? a,BarcodeScanArgs b) =>
+        {
+            UID = b.Barcode;
+            await Submit();
+            await InvokeAsync(StateHasChanged);
+        };
     }
     async Task ShowScanner()
     {
@@ -240,5 +249,8 @@
             NavMgr.NavigateTo("outlet");
         }
     }
-
+    public void Dispose()
+    {
+        barcodeScanner.UnHook();
+    }
 }
