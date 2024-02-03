@@ -267,9 +267,9 @@ namespace WaterPositive.Web.Data
             styleHeader.HorizontalAlignment = HorizontalAlignmentStyle.Center;
             styleHeader.VerticalAlignment = VerticalAlignmentStyle.Center;
             styleHeader.Font.Weight = ExcelFont.BoldWeight;
-            styleHeader.Font.Color = Color.Black;
+            styleHeader.Font.Color = SpreadsheetColor.FromName(ColorName.Black);
             styleHeader.WrapText = true;
-            styleHeader.Borders.SetBorders(MultipleBorders.Left | MultipleBorders.Right | MultipleBorders.Top | MultipleBorders.Bottom, Color.Black, LineStyle.Thin);
+            styleHeader.Borders.SetBorders(MultipleBorders.Left | MultipleBorders.Right | MultipleBorders.Top | MultipleBorders.Bottom, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 
 
 
@@ -299,9 +299,9 @@ namespace WaterPositive.Web.Data
             style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
             style.VerticalAlignment = VerticalAlignmentStyle.Center;
             style.Font.Weight = ExcelFont.NormalWeight;
-            style.Font.Color = Color.Black;
+            style.Font.Color = SpreadsheetColor.FromName(ColorName.Black);
             style.WrapText = true;
-            style.Borders.SetBorders(MultipleBorders.Left | MultipleBorders.Right | MultipleBorders.Top | MultipleBorders.Bottom, Color.Black, LineStyle.Thin);
+            style.Borders.SetBorders(MultipleBorders.Left | MultipleBorders.Right | MultipleBorders.Top | MultipleBorders.Bottom, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 
             foreach (var item in datas)
             {
