@@ -9,6 +9,7 @@
 @inject AppState AppState
 @inject IJSRuntime IJS
 @inject BarcodeInterceptor barcodeScanner
+@inject AudioPlayer Player
 @implements IDisposable
 <div class="container flex-row">
     <div class="header">
@@ -101,10 +102,12 @@
                 PIN_MASK = string.Empty;
                 break;
         }
+        Player.Click();
     }
 
     async Task Enter()
     {
+       
         await Submit();
     }
 
@@ -124,6 +127,7 @@
                 }
                 break;
         }
+        Player.Click();
     }
 
     async Task ChangeMode(InputModes mode)
@@ -144,6 +148,7 @@
 
     async Task Reset()
     {
+        Player.Click();
         PIN = string.Empty;
         PIN_MASK = string.Empty;
         UID = string.Empty;
@@ -236,6 +241,7 @@
             errors.Clear();
             errors.Add(Pesan);
         }
+        Player.Click();
         var res = await CheckPin(PIN);
         if (res.Any())
         {
@@ -243,7 +249,7 @@
             errors.AddRange(res);
         }
         else
-        {
+        { 
             var user = UserSvc.GetDataByUID(UID);
             AppState.CurrentUser = user;
             NavMgr.NavigateTo("outlet");

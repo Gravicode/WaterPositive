@@ -41,6 +41,7 @@ namespace WaterPositive.Kiosk
             services.AddTransient<SerialDevice>();
             services.AddTransient<PosPrinterService>();
             services.AddTransient<BarcodeInterceptor>();
+            services.AddSingleton<AudioPlayer>();
            
             services.AddWindowsFormsBlazorWebView();
             blazorWebView1.HostPage = "wwwroot\\index.html";
