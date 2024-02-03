@@ -11,7 +11,7 @@
 @inject PosPrinterService printerSvc
 @inject IToastService toastService
 @implements IDisposable
-
+@inject AudioPlayer Player
 <div class="container">
     <div class="header">
         <div class="logos">
@@ -91,6 +91,7 @@
     }
     async Task Open()
     {
+        Player.Click();
         if (OverLimit) return;
         if (IsFlowing) return;
         CommandStr = "OPEN";
@@ -98,7 +99,8 @@
         IsFlowing = true;
     }
     async Task Close()
-    {
+    {  
+        Player.Click();
         if (!IsFlowing) return;
         CommandStr = "CLOSE";
         IsFlowing = false;
@@ -120,6 +122,7 @@
 
     async Task End()
     {
+        Player.Click();
         if (IsFlowing)await Close();
         //insert to db
         if (Volume > 0)
