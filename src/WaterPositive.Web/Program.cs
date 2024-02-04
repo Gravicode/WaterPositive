@@ -100,6 +100,7 @@ namespace WaterPositive.Web
             AppConstants.StorageAccess = Configuration["Storage:Access"];
             AppConstants.StorageSecret = Configuration["Storage:Secret"];
             AppConstants.StorageBucket = Configuration["Storage:Bucket"];
+            AppConstants.UploadUrlPrefix = Configuration["UploadUrlPrefix"];
             var setting = new StorageSetting() { };
             setting.Bucket = AppConstants.StorageBucket;
             setting.SecretKey = AppConstants.StorageSecret;

@@ -78,13 +78,13 @@ namespace WaterPositive.Web.Data
 
         public List<UserProfile> GetAllData()
         {
-            var data = from x in db.UserProfiles
+            var data = from x in db.UserProfiles.AsNoTracking()
                        select x;
             return data.ToList();
         }
         public List<UserProfile> GetAllData(string UserName)
         {
-            var data = from x in db.UserProfiles
+            var data = from x in db.UserProfiles.AsNoTracking()
                        where x.Username == UserName
                        select x;
             return data.ToList();
@@ -144,11 +144,12 @@ namespace WaterPositive.Web.Data
             {
                 db.Entry(data).State = EntityState.Modified;
                 db.SaveChanges();
-
+                //db.DetachAllTrackingObject();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
 
 
