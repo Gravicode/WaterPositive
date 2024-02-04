@@ -54,7 +54,7 @@ namespace WaterPositive.Web.Data
         }
         public Roles GetUserRole(string Email)
         {
-            var selItem = db.UserProfiles.Where(x => x.Username == Email).FirstOrDefault();
+            var selItem = db.UserProfiles.Where(x => x.Username == Email).AsNoTracking().FirstOrDefault();
             return selItem.Role;
         }
 

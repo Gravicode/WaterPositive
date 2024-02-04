@@ -151,6 +151,7 @@
         }
         else
         {
+            TaskObject.Password = enc.Encrypt(TaskObject.Password);
             TaskObject.UpdatedDate = DateHelper.GetLocalTimeNow();
 
             var res = service.UpdateData(TaskObject);
