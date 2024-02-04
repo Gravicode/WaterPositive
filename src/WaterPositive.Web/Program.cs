@@ -48,7 +48,7 @@ namespace WaterPositive.Web
             builder.Services.AddHttpClient();
             builder.Services.AddScoped<HttpClient>();
             builder.Services.AddTransient<AzureBlobHelper>();
-            builder.Services.AddSingleton<UserProfileService>();
+            builder.Services.AddTransient<UserProfileService>();
             builder.Services.AddTransient<WaterDepotService>();
             builder.Services.AddTransient<CCTVService>();
             builder.Services.AddTransient<DataCounterService>();

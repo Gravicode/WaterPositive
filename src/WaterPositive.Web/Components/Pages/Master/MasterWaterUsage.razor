@@ -99,7 +99,7 @@ else
             return true;
         if (element.User.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-            if (element.WaterDepot.Nama.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (element.WaterDepot.Nama.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
         return false;
@@ -117,11 +117,11 @@ else
         }
     }
 
-   
+
     protected override async Task OnInitializedAsync()
     {
 
-       
+
         var user = (await authenticationStateTask).User;
 
         if (user.Identity.IsAuthenticated)
@@ -132,10 +132,15 @@ else
         }
 
         if (service == null) service = new WaterUsageService();
+        Refresh();
+    }
+
+    void Refresh()
+    {
         if(MyRole == Roles.Admin)
             DataWaterUsage = service.GetAllData();
         else
-             DataWaterUsage = service.GetAllData(UserName);       
+            DataWaterUsage = service.GetAllData(UserName);       
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -165,7 +170,7 @@ else
     }
     private async void DataChanged()
     {
-        DataWaterUsage = service.GetAllData();
+        Refresh();
         StateHasChanged();
     }
 
@@ -196,8 +201,7 @@ else
         if (!result.Cancelled)
         {
             var task = service.DeleteData(itemObject.Id);
-            //await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
-            DataWaterUsage = service.GetAllData();
+            Refresh();
             itemObject = new WaterUsage() { Id = -1 };
         }
     }
