@@ -6,10 +6,11 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IDialogService DialogService
 @using System.IO
+@inject WaterPositive.Web.Data.UserProfileService Userservice
 
-<h1>Daftar WaterUsage</h1>
+<h1>Daftar Water Usage</h1>
 
-<p>Gunakan halaman ini untuk melihat info WaterUsage.</p>
+<p>Gunakan halaman ini untuk melihat info Water Usage.</p>
 
 @if (DataWaterUsage == null)
 {
@@ -19,7 +20,7 @@ else
 {
     <MudTable Context="item" Items="@DataWaterUsage" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<WaterUsage,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Data WaterUsage</MudText>
+            <MudText Typo="Typo.h6">Data Water Usage</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
@@ -38,10 +39,14 @@ else
             <MudTd DataLabel="Depot">@item.WaterDepot.Nama</MudTd>
         
             <MudTd DataLabel="Actions">
-                @if (HasLogin)
+                @if(MyRole == Roles.Admin)
                 {
                     <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForEdit(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Ubah</MudButton>
                     <MudButton ButtonType="ButtonType.Button" @onclick="(() => PrepareForDelete(item))" DisableElevation="true" Variant="Variant.Filled" Color="Color.Error" Class="mr-2">Hapus</MudButton>
+                }
+                else
+                {
+                    <p>-</p>
                 }
             </MudTd>
         </RowTemplate>
@@ -59,10 +64,10 @@ else
 
 
 }
-@if (HasLogin)
+@if (MyRole == Roles.Admin)
 {
     <MudPaper Class="pa-4 mt-4">
-        <MudButton ButtonType="ButtonType.Button" @onclick="(() => InitializeitemObject())" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Masukan WaterUsage Baru</MudButton>
+        <MudButton ButtonType="ButtonType.Button" @onclick="(() => InitializeitemObject())" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">Masukan Water Usage Baru</MudButton>
     </MudPaper>
 }
 
@@ -76,7 +81,7 @@ else
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     string UserName;
-
+    Roles MyRole = Roles.Unknown;
     private bool dense = false;
     private bool hover = true;
     private bool striped = false;
@@ -112,24 +117,25 @@ else
         }
     }
 
-    WaterPositive.Web.Data.UserProfileService Userservice;
+   
     protected override async Task OnInitializedAsync()
     {
 
-        if (Userservice == null) Userservice = new UserProfileService();
+       
         var user = (await authenticationStateTask).User;
 
         if (user.Identity.IsAuthenticated)
         {
             UserName = user.Identity.Name;
-            HasLogin = true;// Userservice.GetUserRole(UserName) == Roles.Admin;
+            HasLogin = true;
+            MyRole = Userservice.GetUserRole(UserName);
         }
 
         if (service == null) service = new WaterUsageService();
-
-        DataWaterUsage = service.GetAllData();
-
-
+        if(MyRole == Roles.Admin)
+            DataWaterUsage = service.GetAllData();
+        else
+             DataWaterUsage = service.GetAllData(UserName);       
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -143,7 +149,7 @@ else
 
         itemObject = new WaterUsage();
 
-        customHeader = "Masukan WaterUsage Baru";
+        customHeader = "Masukan Water Usage Baru";
 
         var action = new Action(DataChanged);
         var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };
@@ -165,7 +171,7 @@ else
 
     private async Task PrepareForEdit(WaterUsage item)
     {
-        customHeader = "Ubah Data WaterUsage";
+        customHeader = "Ubah Data Water Usage";
         itemObject = item;
         var action = new Action(DataChanged);
         var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };

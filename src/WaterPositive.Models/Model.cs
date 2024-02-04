@@ -419,7 +419,7 @@ namespace WaterPositive.Models
         public DateTime? SyncDate { get; set; } = null;
 
     }
-    public enum Roles { Admin, User, Operator }
+    public enum Roles { Admin, User, Operator, Unknown }
     [DataContract]
     public class WaterPrice
     {

@@ -15,7 +15,7 @@ namespace WaterPositive.Web.Pages
             await HttpContext
                 .SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
-            return LocalRedirect(Url.Content("/login"));
+            return LocalRedirect(Url.Content("/auth/login"));
         }
     }
 }

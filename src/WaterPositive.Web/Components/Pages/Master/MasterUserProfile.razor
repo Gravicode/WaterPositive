@@ -7,10 +7,10 @@
 @inject IDialogService DialogService
 @inject ReportService Reportservice
 @using System.IO
+@inject WaterPositive.Web.Data.UserProfileService service
+<h1>Daftar User Profile</h1>
 
-<h1>Daftar UserProfile</h1>
-
-<p>Gunakan halaman ini untuk melihat info UserProfile.</p>
+<p>Gunakan halaman ini untuk melihat info User Profile.</p>
 
 @if (DataUserProfile == null)
 {
@@ -20,7 +20,7 @@ else
 {
     <MudTable Context="item" Items="@DataUserProfile" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<UserProfile,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Data UserProfile</MudText>
+            <MudText Typo="Typo.h6">Data User Profile</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
@@ -86,7 +86,6 @@ else
 @code {
     bool HasLogin = false;
     UserProfileDetail detail;
-    WaterPositive.Web.Data.UserProfileService service;
     string customHeader = string.Empty;
     List<UserProfile> DataUserProfile;
     UserProfile itemObject = new UserProfile();
@@ -100,7 +99,7 @@ else
     private bool bordered = false;
     private string searchString1 = "";
     private UserProfile selectedItem1 = null;
-
+    Roles MyRole = Roles.Unknown;
     private HashSet<UserProfile> selectedItems = new HashSet<UserProfile>();
 
     private bool FilterFunc1(UserProfile element) => FilterFunc(element, searchString1);
@@ -133,23 +132,21 @@ else
         }
     }
 
-    WaterPositive.Web.Data.UserProfileService Userservice;
     protected override async Task OnInitializedAsync()
     {
 
-        if (Userservice == null) Userservice = new UserProfileService();
         var user = (await authenticationStateTask).User;
 
         if (user.Identity.IsAuthenticated)
         {
             UserName = user.Identity.Name;
-            HasLogin = true;// Userservice.GetUserRole(UserName) == Roles.Admin;
+            HasLogin = true;
+            MyRole = service.GetUserRole(UserName);
         }
-
-        if (service == null) service = new UserProfileService();
-
-        DataUserProfile = service.GetAllData();
-
+        if(MyRole == Roles.Admin)
+            DataUserProfile = service.GetAllData();
+        else
+            DataUserProfile = service.GetAllData(UserName);
 
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -164,7 +161,7 @@ else
 
         itemObject = new UserProfile();
 
-        customHeader = "Masukan UserProfile Baru";
+        customHeader = "Masukan User Profile Baru";
 
         var action = new Action(DataChanged);
         var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };
@@ -186,7 +183,7 @@ else
 
     private async Task PrepareForEdit(UserProfile item)
     {
-        customHeader = "Ubah Data UserProfile";
+        customHeader = "Ubah Data User Profile";
         itemObject = item;
         var action = new Action(DataChanged);
         var parameters = new DialogParameters { ["TaskObject"] = itemObject, ["CustomHeader"] = customHeader, ["DataChanged"] = action };

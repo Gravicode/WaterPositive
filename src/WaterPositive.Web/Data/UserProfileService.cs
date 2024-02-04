@@ -82,6 +82,13 @@ namespace WaterPositive.Web.Data
                        select x;
             return data.ToList();
         }
+        public List<UserProfile> GetAllData(string UserName)
+        {
+            var data = from x in db.UserProfiles
+                       where x.Username == UserName
+                       select x;
+            return data.ToList();
+        }
 
         public UserProfile GetDataById(object Id)
         {
