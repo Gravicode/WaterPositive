@@ -13,7 +13,7 @@ namespace WaterPositive.Kiosk
         bool IsSync = false;
         SyncHelper sync;
         XbeeReceiverService xbeeReceiverService;
-        
+        AppState? state;
         public Form1()
         {
             
@@ -48,7 +48,17 @@ namespace WaterPositive.Kiosk
             blazorWebView1.Services = services.BuildServiceProvider();
             blazorWebView1.RootComponents.Add<App>("#app");
             Setup();
-            DataPrepare();
+            state = blazorWebView1.Services.GetService<AppState>();
+            if (CheckInternet())
+                DataPrepare();
+        }
+
+        bool CheckInternet()
+        {
+            var res = InternetHelper.IsConnectedToInternet();
+            AppConstants.InternetOK = res;
+            state?.RefreshInternet(res);
+            return res;
         }
         private void GoFullscreen(bool fullscreen)
         {
@@ -71,16 +81,30 @@ namespace WaterPositive.Kiosk
 
         void Setup()
         {
-            SyncTimer = new System.Timers.Timer(new TimeSpan(0, 5, 0));
+            
+            try
+            {
+                var timerstr = AppConstants.SyncTimer.Split(":");
+                var delayTimer = new TimeSpan(int.Parse(timerstr[0]), int.Parse(timerstr[1]), int.Parse(timerstr[2]));
+                SyncTimer = new System.Timers.Timer(delayTimer);
+            }
+            catch (Exception ex)
+            {
+                SyncTimer = new System.Timers.Timer(new TimeSpan(0, 5, 0));
+            }
+            
             var db = new WaterPositiveDB(true);
             db.Database.EnsureCreated();
             var db_remote = new WaterPositiveDB(false);
             sync = new SyncHelper(db,db_remote);
             SyncTimer.Elapsed += async(a, b) => {
                 if (IsSync) return;
-                IsSync = true;
-                var res = await sync.SyncData();
-                IsSync = false;
+                if (CheckInternet())
+                {
+                    IsSync = true;
+                    var res = await sync.SyncData();
+                    IsSync = false;
+                }
             };
             SyncTimer.Start();
             this.xbeeReceiverService = new(new SensorDataService());

@@ -8,7 +8,8 @@ namespace WaterPositive.Kiosk.Data
     public class AppConstants
     {
         public static string SecretCode = "911911911";
-
+        public static string SyncTimer = "00:05:00";
+        public static bool InternetOK { set; get; } = true;
         public const string MaintenanceMessage = "Terjadi masalah pada alat, hubungi petugas, dan lakukan prosedur reset.";
         public static string PrinterName = "WP-80C";
         public static string XbeePort = "COM5";

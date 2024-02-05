@@ -27,6 +27,7 @@ namespace WaterPositive.Kiosk
             AppConstants.XbeePort = ConfigurationManager.AppSettings["XbeePort"];
             AppConstants.ComPort = ConfigurationManager.AppSettings["ComPort"];
             AppConstants.PrinterPort = ConfigurationManager.AppSettings["PrinterPort"];
+            AppConstants.SyncTimer = ConfigurationManager.AppSettings["SyncTimer"];
             var db = new WaterPositiveDB(true);
             db.Database.EnsureCreated();
         

@@ -10,6 +10,7 @@
 @inject IJSRuntime IJS
 @inject BarcodeInterceptor barcodeScanner
 @inject AudioPlayer Player
+@inject AppState AppState
 @implements IDisposable
 <div class="container flex-row">
     <div class="header">
@@ -182,6 +183,21 @@
             //await IJS.InvokeVoidAsync("SetFocus", "txtNoKartu");
 
         }
+    }   
+    protected override async Task OnInitializedAsync()
+    {
+
+        AppState.OnInternetChange += InternetChange;
+
+    }
+    async void InternetChange(bool State)
+    {
+        if (!State)
+        {
+            errors.Clear();
+            errors.Add("Koneksi jaringan terputus, silakan hubungi operator.");
+            await InvokeAsync(StateHasChanged);
+        }
     }
     protected override void OnInitialized()
     {
@@ -263,7 +279,8 @@
         }
     }
     public void Dispose()
-    {
+    { 
+        AppState.OnInternetChange -= InternetChange;
         barcodeScanner.UnHook();
     }
 }
