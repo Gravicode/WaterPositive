@@ -18,9 +18,19 @@ namespace WaterPositive.Kiosk.Helpers
         }
 
         public event Action OnElapsed;
-
-        private void Dispose()
+        public void Start()
         {
+            _timer.Enabled = true;
+            _timer.Start();            
+        }
+        public void Stop()
+        {
+            _timer.Stop();
+            _timer.Enabled = false;
+        }
+        public void Dispose()
+        {
+            
             _timer.Stop();
             _timer.Dispose();
         }

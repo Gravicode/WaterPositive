@@ -40,6 +40,10 @@
                 <label for="txtPin">Harga (Rp)</label>
                 <input type="text" id="txtPin" @bind="Price" readonly />
             </div>
+            <div class="input">
+                <label for="txtStatus">Status</label>
+                <div class="text" id="txtStatus">@Status</div>
+            </div>
             <div style="display:none;" class="input">
                 <label for="txtLog">Logs</label>
                 <ul class="div-scroll">
@@ -59,12 +63,15 @@
 </div>
 
 @code {
+    string Status { set; get; }
     long ErrorCount = 0;
     DateTime CurrentTime = DateTime.Now;
     BlazorTimer timer;
     WaterPrice CurrentPrice;
     WaterDepot CurrentDepot;
     UsageLimit CurrentLimit;
+    BlazorTimer AutoCloseTimer;
+    bool CloseNow = true;
     double prevVol = 0;
     double Volume = 0;
     double Price = 0;
@@ -88,6 +95,7 @@
     void IDisposable.Dispose()
     {
         device.Dispose();
+        AutoCloseTimer.Dispose();
     }
     async Task Open()
     {
@@ -97,6 +105,7 @@
         CommandStr = "OPEN";
         await SendCommand();
         IsFlowing = true;
+        SetStatus(StatusOutlet.WATER_OPEN);
     }
     async Task Close()
     {  
@@ -105,6 +114,7 @@
         CommandStr = "CLOSE";
         IsFlowing = false;
         await SendCommand();
+        SetStatus(StatusOutlet.WATER_CLOSE);
     }
 
     async Task<bool> CheckLimit()
@@ -203,7 +213,37 @@
             CurrentTime = DateTime.Now;
             await InvokeAsync(StateHasChanged);
         };
+        AutoCloseTimer = new();
+        AutoCloseTimer.SetTimer(AppConstants.CloseTimer);
+        AutoCloseTimer.OnElapsed += async () =>
+        {
+            if (CloseNow)
+            {
+                if(!IsFlowing)
+                    await InvokeAsync(End);
+                else if (Volume <= 0)
+                {
+                    await InvokeAsync(()=>SetStatus(StatusOutlet.WATER_EMPTY));
+                }
+            }
+            else
+            {
+                CloseNow = true;
+            }
+        };
+        Status = StatusOutlet.WATER_START;
     }
+
+    void SetStatus(string Message)
+    {
+        Status = Message;
+    }
+
+    void DelayAutoClose()
+    {
+        CloseNow = false;
+    }
+
     protected override void OnInitialized()
     {
 
@@ -212,6 +252,7 @@
     {
         if (!AppConstants.NeedMaintenance)
         {
+            DelayAutoClose();
             var res = device.SendMessage(CommandStr.ToUpper());
             if (res)
             {

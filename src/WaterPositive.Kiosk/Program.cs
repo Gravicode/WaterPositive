@@ -28,6 +28,7 @@ namespace WaterPositive.Kiosk
             AppConstants.ComPort = ConfigurationManager.AppSettings["ComPort"];
             AppConstants.PrinterPort = ConfigurationManager.AppSettings["PrinterPort"];
             AppConstants.SyncTimer = ConfigurationManager.AppSettings["SyncTimer"];
+            AppConstants.CloseTimer = int.Parse( ConfigurationManager.AppSettings["CloseTimer"]);
             var db = new WaterPositiveDB(true);
             db.Database.EnsureCreated();
         
