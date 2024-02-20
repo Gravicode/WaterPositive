@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Amqp.Framing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Web.WebView2.Core;
 using WaterPositive.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WaterPositive.Kiosk.Data
 {
@@ -34,6 +36,7 @@ namespace WaterPositive.Kiosk.Data
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterUsages");
                     foreach (var item in remote_data)
                     {
+                        Remote.Entry(item).State = EntityState.Detached;
                         var exist = local_data.FirstOrDefault(x => x.Username == item.Username);
                         if (exist == null)
                         {
@@ -42,6 +45,7 @@ namespace WaterPositive.Kiosk.Data
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
+                            Local.Entry(exist).State = EntityState.Modified;
                             exist.SyncDate = DateTime.Now;
                             exist.UID = item.UID;
                             exist.PIN = item.PIN;
@@ -61,6 +65,7 @@ namespace WaterPositive.Kiosk.Data
                     //sync if needed
                     var remote_data = Remote.WaterDepots.AsNoTracking().ToList();
                     var local_data = Local.WaterDepots.ToList();
+                   
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterDepots");
                     foreach (var item in remote_data)
                     {
@@ -72,6 +77,7 @@ namespace WaterPositive.Kiosk.Data
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
+                            Local.Entry(exist).State = EntityState.Modified;
                             exist.SyncDate = DateTime.Now;
                             exist.UpdatedDate = item.UpdatedDate;
 
