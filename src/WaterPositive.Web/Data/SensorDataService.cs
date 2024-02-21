@@ -19,7 +19,10 @@ namespace WaterPositive.Web.Data
             db.SaveChanges();
             return true;
         }
-
+        public List<SensorData> GetLastData(int Count)
+        {
+            return db.SensorDatas.OrderByDescending(x => x.Id).Take(Count).ToList();
+        }
         public List<SensorData> FindByKeyword(string Keyword)
         {
             var data = from x in db.SensorDatas
