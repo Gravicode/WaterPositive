@@ -72,6 +72,13 @@ namespace WaterPositive.Web.Controllers
             var datas = service.GetLastId();
             return Ok(datas);
         }
-
+        [HttpGet("GetLastData")]
+        public IActionResult GetLastData(int Count)
+        {
+            if (Count < 0) Count = 5;
+            if (Count > 100) Count = 100;
+            var datas = service.GetLastData(Count);
+            return Ok(datas);
+        }
     }
 }
