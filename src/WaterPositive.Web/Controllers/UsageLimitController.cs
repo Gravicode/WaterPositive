@@ -21,7 +21,7 @@ namespace WaterPositive.Web.Controllers
         }
        
         [HttpDelete("DeleteData")]
-        public IActionResult DeleteData(int id)
+        public IActionResult DeleteData(long id)
         {
             var respon = service.DeleteData(id);
             if (respon == true)
