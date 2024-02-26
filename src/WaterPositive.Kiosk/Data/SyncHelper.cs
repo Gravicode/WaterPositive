@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Web.WebView2.Core;
 using WaterPositive.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.AxHost;
 
 namespace WaterPositive.Kiosk.Data
 {
@@ -28,11 +29,16 @@ namespace WaterPositive.Kiosk.Data
         {
             try
             {
+                string Stat = string.Empty;
+                int UpdateCounter = 0;
+                Tools.Logs.WriteLog($"sync started\r\n");
                 //users
                 {
+                 
                     //sync if needed
                     var remote_data = Remote.UserProfiles.AsNoTracking().ToList();
                     var local_data = Local.UserProfiles.ToList();
+                   
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterUsages");
                     foreach (var item in remote_data)
                     {
@@ -42,6 +48,7 @@ namespace WaterPositive.Kiosk.Data
                         {
                             item.SyncDate = DateTime.Now;
                             Local.UserProfiles.Add(item);
+                            UpdateCounter++;
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
@@ -56,12 +63,16 @@ namespace WaterPositive.Kiosk.Data
                             exist.PicUrl = item.PicUrl;
                             exist.Alamat = item.Alamat;
                             exist.UpdatedDate = item.UpdatedDate;
+                            UpdateCounter++;
                         }
                     }
                     Local.SaveChanges();
+                    Stat = $"sync user: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
                 //water depots
                 {
+                    UpdateCounter = 0;
                     //sync if needed
                     var remote_data = Remote.WaterDepots.AsNoTracking().ToList();
                     var local_data = Local.WaterDepots.ToList();
@@ -74,6 +85,7 @@ namespace WaterPositive.Kiosk.Data
                         {
                             item.SyncDate = DateTime.Now;
                             Local.WaterDepots.Add(item);
+                            UpdateCounter++;
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
@@ -86,13 +98,16 @@ namespace WaterPositive.Kiosk.Data
                             exist.Nama = item.Nama;
                             exist.Lokasi = item.Lokasi;
                             exist.Keterangan = item.Keterangan;
-
+                            UpdateCounter++;
                         }
                     }
                     Local.SaveChanges();
+                    Stat = $"sync water depot: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
                 //water price
                 {
+                    UpdateCounter = 0;
                     //sync if needed
                     var remote_data = Remote.WaterPrices.AsNoTracking().ToList();
                     var local_data = Local.WaterPrices.ToList();
@@ -104,6 +119,7 @@ namespace WaterPositive.Kiosk.Data
                         {
                             item.SyncDate = DateTime.Now;
                             Local.WaterPrices.Add(item);
+                            UpdateCounter++;
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
@@ -116,13 +132,16 @@ namespace WaterPositive.Kiosk.Data
                             exist.TanggalAkhir = item.TanggalAkhir;
                             exist.TanggalAwal = item.TanggalAwal;
                             exist.Keterangan = item.Keterangan;
-
+                            UpdateCounter++;
                         }
                     }
                     Local.SaveChanges();
+                    Stat = $"sync water price: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
                 //CCTV
                 {
+                    UpdateCounter = 0;
                     //sync if needed
                     var remote_data = Remote.CCTVs.AsNoTracking().ToList();
                     var local_data = Local.CCTVs.ToList();
@@ -134,6 +153,7 @@ namespace WaterPositive.Kiosk.Data
                         {
                             item.SyncDate = DateTime.Now;
                             Local.CCTVs.Add(item);
+                            UpdateCounter++;
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
@@ -147,13 +167,16 @@ namespace WaterPositive.Kiosk.Data
                             exist.Merek = item.Merek;
                             exist.Nama = item.Nama;
 
-
+                            UpdateCounter++;
                         }
                     }
                     Local.SaveChanges();
+                    Stat = $"sync cctv: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
                 //water usage => push to cloud
                 {
+                    UpdateCounter = 0;
                     //sync if needed
                     var local_data = Local.WaterUsages.Where(x=>!x.SyncDate.HasValue).ToList();
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterUsages");
@@ -173,12 +196,16 @@ namespace WaterPositive.Kiosk.Data
                             WaterDepotId = item.WaterDepotId
                         };
                         Remote.WaterUsages.Add(newItem);
+                        UpdateCounter++;
                     }
                     Remote.SaveChanges();
                     Local.SaveChanges();
+                    Stat = $"sync water usage: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
                 //UsageLimits
                 {
+                    UpdateCounter = 0;
                     //sync if needed
                     var remote_data = Remote.UsageLimits.AsNoTracking().ToList();
                     var local_data = Local.UsageLimits.ToList();
@@ -190,6 +217,8 @@ namespace WaterPositive.Kiosk.Data
                         {
                             item.SyncDate = DateTime.Now;
                             Local.UsageLimits.Add(item);
+
+                            UpdateCounter++;
                         }
                         else if (exist.SyncDate < item.UpdatedDate)
                         {
@@ -201,12 +230,16 @@ namespace WaterPositive.Kiosk.Data
                             exist.TanggalAwal = item.TanggalAwal;
                             exist.Keterangan = item.Keterangan;
 
+                            UpdateCounter++;
                         }
                     }
                     Local.SaveChanges();
+                    Stat = $"sync usage limit: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
                 //sensor data
                 {
+                    UpdateCounter = 0;
                     //push only
                     var local_data = Local.SensorDatas.Where(x=>x.SyncDate<=DateTime.MinValue).ToList();
                     //Local.Database.ExecuteSqlRaw("DELETE FROM WaterDepots");
@@ -226,15 +259,25 @@ namespace WaterPositive.Kiosk.Data
                         newItem.SyncDate = item.SyncDate;
                         newItem.UpdatedDate = item.UpdatedDate;
                         Remote.SensorDatas.Add(newItem);
+                        UpdateCounter++;
                     }
                     Local.SaveChanges();
                     Remote.SaveChanges();
+                    Stat = $"sync sensor data: {UpdateCounter} items\r\n";
+                    Tools.Logs.WriteLog($"{Stat}");
                 }
+               
+
             }
             catch (Exception ex)
             {
+                Tools.Logs.WriteLog($"fail to sync: {ex}");
                 Console.WriteLine("sync error:"+ex);
                 return false;
+            }
+            finally
+            {
+                Tools.Logs.WriteLog($"sync ended\r\n");
             }
            
             return true;
