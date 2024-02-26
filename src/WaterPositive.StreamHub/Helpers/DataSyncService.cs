@@ -31,6 +31,11 @@ namespace WaterPositive.StreamHub.Helpers
                     CurrentToken = token;
                 }
                 if (string.IsNullOrEmpty(CurrentToken)) return false;
+                var now = new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day);
+                if (item.TimeStamp < now)
+                {
+                    item.TimeStamp = DateTime.Now;
+                }
                 Dictionary<string, string> data = new();
                 data.Add("Id", "0");
                 data.Add("Nama", item.Name);
